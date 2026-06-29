@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  /* Forza il browser a usare componenti chiari */
+
+  --brand-red: #E31E24;
+  --brand-red-hover: #c41a1f;
+  --apple-bg: #f5f5f7;
+  --wrapper-bg: #ffffff;
+  --apple-text: #1d1d1f;
+  --apple-text-muted: #86868b;
+  --border-light: #e5e5ea;
+
+  --apple-card-bg: rgba(255, 255, 255, 0.45);
+  --apple-card-border: rgba(255, 255, 255, 0.8);
+
+  --btn-bg: #ffffff;
+  --btn-text: #5e5e5e;
+  --btn-hover-shadow: rgba(227, 30, 36, 0.12);
+
+  --modal-bg: rgba(255, 255, 255, 0.85);
+  --input-bg: rgba(0, 0, 0, 0.04);
+
+  --easing-slow: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--apple-bg);
+  color: var(--apple-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Glassmorphism Utility */
+.glass-effect {
+  background: var(--apple-card-bg);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--apple-card-border);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--apple-text-muted);
+}
+
+/* Animations */
+@keyframes drawPath {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fillMain {
+  to {
+    fill: var(--brand-red);
+    stroke-width: 0;
+  }
+}
+
+@keyframes fillStar {
+  to {
+    fill: white;
+    stroke-width: 0;
+  }
+}
+
+@keyframes revealText {
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+@keyframes sunriseSweep {
+  0% {
+    mask-position: 100% 0;
+    -webkit-mask-position: 100% 0;
+  }
+
+  100% {
+    mask-position: 0% 0;
+    -webkit-mask-position: 0% 0;
+  }
+}
+
+@keyframes appleShake {
+
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+@keyframes aiBreathing {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px rgba(227, 30, 36, 0.1));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 15px rgba(227, 30, 36, 0.5));
+    transform: scale(1.02);
+  }
+}
+
+@keyframes drawLoginLogo {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fillLoginLogo {
+  to {
+    fill: var(--brand-red);
+    stroke-width: 0;
+  }
+}
+
+/* Utility Classes */
+.animate-draw {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: drawPath 2s var(--easing-slow) forwards;
+}
+
+.animate-fill-main {
+  animation: fillMain 1s var(--easing-slow) 1.8s forwards;
+}
+
+.animate-fill-star {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation:
+    drawPath 1.5s var(--easing-slow) 0.5s forwards,
+    fillStar 1s var(--easing-slow) 1.8s forwards;
+}
+
+.animate-reveal {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(0.95);
+  animation: revealText 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) 1.5s forwards;
+}
+
+.shake-animation {
+  animation: appleShake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.ai-pulse {
+  animation: aiBreathing 4s ease-in-out infinite;
+}
+
+.sunrise-sweep {
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 60%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 60%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  animation: sunriseSweep 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.5s;
+}
+
+.path-main {
+  fill: transparent;
+  stroke: var(--brand-red);
+  stroke-width: 2;
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation:
+    drawPath 2s var(--easing-slow) forwards,
+    fillMain 1s var(--easing-slow) 1.8s forwards;
+}
+
+.path-star {
+  fill: transparent;
+  stroke: #d1d1d6;
+  stroke-width: 2;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation:
+    drawPath 1.5s var(--easing-slow) 0.5s forwards,
+    fillStar 1s var(--easing-slow) 1.8s forwards;
+}

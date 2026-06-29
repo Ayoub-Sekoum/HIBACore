@@ -1,0 +1,108 @@
+"""
+TenantMiddleware — deve essere il PRIMO middleware dopo CORS.
+
+Estrae dal JWT (già validato da Azure API Management / App Service):
+  - tid  → tenant_id
+  - oid  → user_id
+  - X-Correlation-Id header → correlation_id
+
+Ogni request senza tenant_id valido viene bloccata con TENANT_101.
+"""
+import uuid
+from typing import Callable
+
+import structlog # type: ignore
+from fastapi import Request, Response # type: ignore
+from fastapi.responses import JSONResponse # type: ignore
+from jose import JWTError, jwt # type: ignore
+from starlette.middleware.base import BaseHTTPMiddleware # type: ignore
+
+from app.core.context import set_correlation_id, set_tenant_id, set_user_id
+from app.core.error_codes import ErrorCode
+from app.core.exceptions import AppException
+from app.core.schemas import APIResponse
+
+logger = structlog.get_logger(__name__)
+
+# Route che non richiedono tenant_id (health check, docs)
+EXEMPT_PATHS = {"/health", "/ready", "/docs", "/openapi.json", "/redoc", "/debug-cors"}
+
+
+class TenantMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        # 1. Bypass per le route pubbliche o di sistema
+        if request.url.path in EXEMPT_PATHS:
+            return await call_next(request)
+
+        # 2. Gestione Correlation ID
+        correlation_id = request.headers.get("X-Correlation-Id", str(uuid.uuid4()))
+        set_correlation_id(correlation_id)
+
+        # 3. Estrazione Tenant/User ID dagli header custom o dal Token JWT
+        tenant_id = request.headers.get("X-Tenant-Id")
+        user_id = request.headers.get("X-User-Id")
+
+        if not tenant_id:
+            auth_header = request.headers.get("Authorization", "")
+            if auth_header.startswith("Bearer "):
+                token = auth_header[7:]
+                try:
+                    # Estrae in modo sicuro il payload senza forzare la validazione crittografica
+                    payload = jwt.get_unverified_claims(token)
+                    tenant_id = payload.get("tid")
+                    user_id = payload.get("oid")
+                except JWTError as e:
+                    logger.error("jwt_decode_failed", error=str(e), path=request.url.path)
+                except Exception as e:
+                    logger.error("jwt_unexpected_error", error=str(e), path=request.url.path)
+
+        # 4. Fallimento: Blocca la richiesta se non c'è traccia del tenant_id
+        if not tenant_id:
+            logger.warning(
+                "tenant_id_missing",
+                path=request.url.path,
+                correlation_id=correlation_id,
+                has_auth_header=bool(request.headers.get("Authorization"))
+            )
+            
+            error_response = APIResponse.fail(
+                error_code=ErrorCode.TENANT_101.name,
+                message=ErrorCode.TENANT_101.default_message,
+            )
+            return JSONResponse(
+                status_code=ErrorCode.TENANT_101.http_status,
+                content=error_response.model_dump(mode="json"),
+                headers={"X-Correlation-Id": correlation_id}
+            )
+
+        # 5. Successo: Imposta i contesti globali e di logging
+        set_tenant_id(tenant_id)
+        if user_id:
+            set_user_id(user_id)
+
+        structlog.contextvars.bind_contextvars(
+            tenant_id=tenant_id,
+            user_id=user_id,
+            correlation_id=correlation_id,
+            path=request.url.path,
+        )
+
+        # 6. Passa la richiesta al layer successivo
+        try:
+            response = await call_next(request)
+        except AppException as exc:
+            app_err_response = APIResponse.fail(
+                error_code=exc.error_code.name,
+                message=exc.detail,
+            )
+            # Riassegna la variabile response in caso di errore controllato
+            response = JSONResponse(
+                status_code=exc.error_code.http_status,
+                content=app_err_response.model_dump(mode="json")
+            )
+
+        # 7. Pulizia finale e Header in uscita
+        response.headers["X-Correlation-Id"] = correlation_id
+        structlog.contextvars.clear_contextvars()
+
+        return response

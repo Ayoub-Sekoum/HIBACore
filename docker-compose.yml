@@ -1,0 +1,48 @@
+version: '3.8'
+
+# Task 10.08: Docker Compose local stack
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - AZURE_OPENAI_ENDPOINT=https://dummy-endpoint.openai.azure.com/
+      - SKILL_ENGINE_URL=http://skill-engine:3000
+    depends_on:
+      - skill-engine
+      - postgres
+      - redis
+
+  skill-engine:
+    build:
+      context: ./backend/skill-engine
+    ports:
+      - "3000:3000"
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=chat_db
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    # Fallback to dev mode volume mapping for hot reloading
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0

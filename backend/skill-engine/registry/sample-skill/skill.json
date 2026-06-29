@@ -1,0 +1,8 @@
+{
+  "name": "sample-skill",
+  "description": "A sample skill that echoes input and adds a greeting.",
+  "tags": ["sample", "test"],
+  "input": "text",
+  "output": "text",
+  "entrypoint": "index.js"
+}

@@ -1,0 +1,101 @@
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.egg
+
+# ─── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+
+# ─── Terraform ────────────────────────────────────────────────────────────────
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl
+
+# ─── Secrets — never commit ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.production
+*.pem
+*.key
+*_credentials.json
+*_secret*
+serviceAccountKey.json
+
+# ─── Logs & debug artifacts ───────────────────────────────────────────────────
+*.log
+*.log.*
+server.log
+debug.log
+startup.log
+ruff_errors.txt
+ruff_select_errors.txt
+imports_raw.txt
+audit_results.json
+task.md.resolved
+
+# ─── Build artifacts ──────────────────────────────────────────────────────────
+*.zip
+*.tar.gz
+dist.zip
+frontend_*.zip
+backend_*.zip
+
+# ─── IDE & OS ─────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ─── AI agent config folders (dev environment) ────────────────────────────────
+.adal/
+.agent/
+.agents/
+.augment/
+.claude/
+.codebuddy/
+.commandcode/
+.continue/
+.cortex/
+.crush/
+.factory/
+.goose/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/
+
+# ─── Backup / temp folders ────────────────────────────────────────────────────
+*_backup_*/
+backend_copy/
+temp_*/

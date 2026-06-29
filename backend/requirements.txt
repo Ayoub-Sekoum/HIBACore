@@ -1,0 +1,60 @@
+# Core
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+gunicorn>=22.0.0
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+
+# Auth
+python-jose[cryptography]>=3.3.0
+cryptography>=44.0.0
+
+# Logging & Monitoring
+structlog>=24.4.0
+azure-monitor-opentelemetry>=1.6.0
+opentelemetry-api>=1.20.0
+opentelemetry-sdk>=1.20.0
+
+# Azure SDK
+azure-identity>=1.19.0
+azure-appconfiguration>=1.7.0
+azure-keyvault-secrets>=4.9.0
+
+# Redis
+redis[hiredis]>=5.2.0
+
+# HTTP Client
+httpx>=0.28.0
+
+# Utilities
+python-multipart>=0.0.18
+openai>=1.50.0
+tenacity>=8.3.0
+tiktoken>=0.7.0
+azure-cosmos>=4.6.0
+azure-storage-blob>=12.19.0
+azure-servicebus>=7.12.2
+azure-search-documents==11.4.0
+azure-ai-projects>=1.0.0b1
+azure-ai-agents>=1.0.0b1
+
+# Database & Vector
+psycopg[binary]>=3.2.0
+pgvector>=0.3.0
+gremlinpython>=3.7.0
+
+# Phase 7: Voice & Vision
+azure-ai-vision-imageanalysis
+aiohttp
+
+# Management & Inference
+azure-mgmt-containerinstance
+azure-ai-inference
+
+# DeepAgents & RAG Integration
+langgraph>=0.2.0
+langchain-openai>=0.2.0
+langchain-community>=0.3.0
+langchain-core>=0.3.0
+azure-ai-contentsafety
+filetype>=1.2.0
