@@ -16,12 +16,19 @@ document.documentElement.classList.remove('dark')
 
 const msalInstance = new PublicClientApplication(msalConfig)
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </MsalProvider>
-  </React.StrictMode>,
-)
+async function initializeApp() {
+  await msalInstance.initialize()
+  await msalInstance.handleRedirectPromise()
+
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <MsalProvider instance={msalInstance}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </MsalProvider>
+    </React.StrictMode>,
+  )
+}
+
+initializeApp().catch(console.error)
