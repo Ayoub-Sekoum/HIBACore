@@ -294,15 +294,6 @@ HIBACore/
 
 HIBACore is in alpha. Contributions are very welcome.
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Commit your changes following [Conventional Commits](https://www.conventionalcommits.org/)
-4. Open a pull request with a clear description
-
-Please read `ARCHITECTURE.md` before contributing to understand the system design.
-
----
-
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
