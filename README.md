@@ -80,6 +80,11 @@ Each organization (tenant) gets a fully isolated context: separate chat history,
 
 ## Features
 
+<p align="center">
+  <img src="docs/ui_chat.png" alt="HIBACore Chat Interface" width="48%" style="margin-right: 1%;"/>
+  <img src="docs/ui_deep_mode.png" alt="HIBACore Deep Mode" width="48%"/>
+</p>
+
 ### AI Models (Multi-tier)
 - **HOBA Mini** (`thinking_level: fast`) — GPT-4o Mini. Fast, economical, streaming via SSE.
 - **HOBA Pro** (`thinking_level: normal`) — GPT-4o. Balanced, powerful, streaming via SSE.
