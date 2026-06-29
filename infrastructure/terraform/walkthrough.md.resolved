@@ -1,0 +1,35 @@
+# Task 1.01 — Hub-Spoke VNet + Private Endpoints: Walkthrough
+
+## What Was Built
+
+A complete Terraform **networking foundation** for the AI Multi-Tenant Chatbot, organized in a clean root + modules pattern and validated as correct.
+
+## Files Created
+
+| File | Purpose |
+|---|---|
+| [terraform/main.tf](file:///c:/ANTI/Chat-azure/main-bot/terraform/main.tf) | Root orchestrator — calls `module.networking`, stubs remaining modules |
+| [terraform/outputs.tf](file:///c:/ANTI/Chat-azure/main-bot/terraform/outputs.tf) | Root outputs — exposes all VNet/subnet/DNS IDs |
+| [terraform/variables.tf](file:///c:/ANTI/Chat-azure/main-bot/terraform/variables.tf) | Root input variables with defaults and validation |
+| [terraform/modules/networking/main.tf](file:///c:/ANTI/Chat-azure/main-bot/terraform/modules/networking/main.tf) | Hub-Spoke VNets, subnets, NSGs, Private DNS, peering |
+| [terraform/modules/networking/variables.tf](file:///c:/ANTI/Chat-azure/main-bot/terraform/modules/networking/variables.tf) | Module input variables |
+| [terraform/modules/networking/outputs.tf](file:///c:/ANTI/Chat-azure/main-bot/terraform/modules/networking/outputs.tf) | Module outputs (IDs used by downstream modules) |
+| [terraform/environments/dev.tfvars](file:///c:/ANTI/Chat-azure/main-bot/terraform/environments/dev.tfvars) | Dev-sized overrides |
+| [terraform/environments/prod.tfvars](file:///c:/ANTI/Chat-azure/main-bot/terraform/environments/prod.tfvars) | Production-sized overrides |
+
+## Architecture Decisions
+
+- **Hub-Spoke model**: Hub VNet (`10.0.0.0/16`) for shared services + Spoke VNet (`10.1.0.0/16`) for workloads
+- **4 dedicated subnets** in Spoke: private-endpoints `/24`, ACA `/23` (or `/21` in prod), APIM `/28`, ACI `/24`
+- **7 Private DNS zones** registered: `privatelink.openai.azure.com`, `blob.core.windows.net`, `documents.azure.com`, `search.windows.net`, `vaultcore.azure.net`, `servicebus.windows.net`, `postgres.database.azure.com`
+- **NSGs** on each subnet with an explicit `Deny_Internet_Outbound` rule (lowest priority overrider) + ACA infra allow rules
+- **VNet peering** bidirectional Hub↔Spoke using `allow_forwarded_traffic = true`
+- **Two Resource Groups**: `rg-<project>-<env>-hub` and `rg-<project>-<env>-spoke`
+
+## Validation Results
+
+```
+terraform init -backend=false  → ✅ Success (azurerm v3.117.1 installed)
+terraform fmt -recursive       → ✅ All files formatted
+terraform validate             → ✅ "The configuration is valid."
+```

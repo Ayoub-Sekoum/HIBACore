@@ -1,0 +1,25 @@
+# environments/dev.tfvars
+# DO NOT commit real subscription_id — inject via CI/CD environment variable
+
+environment        = "dev"
+project_name       = "chatbot"
+location           = "westeurope"
+location_secondary = "northeurope"
+
+# Networking
+hub_vnet_address_space        = "10.0.0.0/16"
+spoke_vnet_address_space      = "10.1.0.0/16"
+subnet_private_endpoints_cidr = "10.1.0.0/24"
+subnet_aca_cidr               = "10.1.1.0/23"
+subnet_apim_cidr              = "10.1.3.0/28"
+subnet_aci_cidr               = "10.1.4.0/24"
+
+# Sizing (smaller for dev — cost optimized)
+cosmos_throughput   = 400
+postgres_sku        = "B_Standard_B2ms"
+postgres_storage_mb = 32768
+apim_sku            = "Developer_1"
+servicebus_sku      = "Premium"
+log_retention_days  = 30
+
+owner_email = "platform@company.com"

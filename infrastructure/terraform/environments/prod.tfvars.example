@@ -1,0 +1,25 @@
+# environments/prod.tfvars
+# DO NOT commit real subscription_id — inject via CI/CD environment variable
+
+environment        = "prod"
+project_name       = "hoba-enterprise"
+location           = "italynorth"
+location_secondary = "westeurope"
+
+# Networking (same CIDRs, but prod is in a dedicated subscription)
+hub_vnet_address_space        = "10.0.0.0/16"
+spoke_vnet_address_space      = "10.1.0.0/16"
+subnet_private_endpoints_cidr = "10.1.0.0/24"
+subnet_aca_cidr               = "10.1.8.0/21" 
+subnet_apim_cidr              = "10.1.16.0/28"
+subnet_aci_cidr               = "10.1.17.0/24"
+
+# Sizing (production-grade)
+cosmos_throughput   = 4000
+postgres_sku        = "GP_Standard_D4s_v3"
+postgres_storage_mb = 131072 # 128 GB
+apim_sku            = "Premium_1"
+servicebus_sku      = "Premium"
+log_retention_days  = 90
+
+owner_email = "ayoub.sekoum@konverto.eu"

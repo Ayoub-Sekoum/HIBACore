@@ -1,0 +1,290 @@
+# FASE 1 — Infrastructure Terraform
+
+## Obiettivo
+
+Costruire tutta l'infrastruttura Azure del chatbot enterprise multi-tenant con architettura **Zero Trust** completa: nessun IP pubblico, tutti i servizi raggiungibili solo via Private Endpoints dentro la VNet, autenticazione tramite Managed Identity, segreti in Key Vault.
+
+## Struttura file da creare
+
+```
+terraform/
+├── main.tf                         ← Root: richiama tutti i moduli
+├── variables.tf                    ← Variabili globali
+├── outputs.tf                      ← Output tra moduli
+├── providers.tf                    ← AzureRM + AzureAD providers
+├── terraform.tf                    ← Required providers + backend
+├── modules/
+│   ├── networking/                 ← 1.01
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── identity/                   ← 1.02 + 1.03
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── keyvault/                   ← 1.04
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── apim/                       ← 1.05
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── policies/jwt_validation.xml
+│   ├── cosmos/                     ← 1.06
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── ai_search/                  ← 1.07
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── postgres/                   ← 1.08
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── storage/                    ← 1.09
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── openai/                     ← 1.10
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── messaging/                  ← 1.11
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── aci/                        ← 1.12
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── monitoring/                 ← 1.13
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+└── environments/
+    ├── dev.tfvars
+    ├── staging.tfvars
+    └── prod.tfvars
+```
+
+## Proposed Changes
+
+---
+
+### Root Terraform
+
+#### [NEW] providers.tf
+- `azurerm` >= 3.100 con features abilitati
+- `azuread` per Entra ID
+- Backend: Azure Blob Storage (remote state)
+
+#### [NEW] variables.tf
+- `environment` (dev/staging/prod)
+- `location` + `location_secondary`
+- `project_name`, `tenant_prefix`
+- `allowed_cidr_ranges`
+
+#### [NEW] main.tf
+- Chiama ogni modulo in ordine (networking → identity → keyvault → ...)
+- Passa outputs tra moduli come inputs
+
+#### [NEW] outputs.tf
+- Esporta endpoints, resource IDs, identity client IDs
+
+---
+
+### 1.01 — `modules/networking/`
+
+**Risorse:**
+- `azurerm_resource_group` "hub" e "spoke"
+- `azurerm_virtual_network` hub (10.0.0.0/16) + spoke (10.1.0.0/16)
+- `azurerm_subnet` per: ACA, APIM, Private Endpoints, ACI
+- `azurerm_virtual_network_peering` hub↔spoke bidirezionale
+- `azurerm_private_dns_zone` per ogni servizio (cosmos, postgres, storage, keyvault, openai, servicebus, search)
+- `azurerm_private_dns_zone_virtual_network_link` per ogni zona
+- `azurerm_network_security_group` con regole deny-all + allow-specific
+
+---
+
+### 1.02 + 1.03 — `modules/identity/`
+
+**Risorse:**
+- `azuread_application` — App Registration backend
+- `azuread_service_principal` + `azuread_service_principal_password`
+- `azuread_application_oauth2_permission_scope` — scope `Chatbot.User`, `Chatbot.Admin`
+- `azurerm_user_assigned_identity` "backend-id"
+- `azurerm_role_assignment` per ogni servizio (Key Vault Reader, Cosmos Contributor, etc.)
+- Output: `client_id`, `tenant_id`, `identity_id`, `identity_principal_id`
+
+---
+
+### 1.04 — `modules/keyvault/`
+
+**Risorse:**
+- `azurerm_key_vault` con `enable_rbac_authorization = true`, `public_network_access_enabled = false`
+- `azurerm_private_endpoint` (subnet private_endpoints)
+- `azurerm_private_dns_zone_group` collegato a `privatelink.vaultcore.azure.net`
+- `azurerm_role_assignment` — assegna `Key Vault Secrets User` alla Managed Identity
+- **Nessun** `access_policy` — solo RBAC
+
+---
+
+### 1.05 — `modules/apim/`
+
+**Risorse:**
+- `azurerm_api_management` SKU Developer/Premium, `virtual_network_type = "Internal"`, subnet APIM
+- `azurerm_api_management_api` "chatbot-v1"
+- `azurerm_api_management_policy` con JWT validation XML policy:
+  - Estrae Bearer token
+  - Valida firma con JWKS endpoint Entra ID
+  - Inietta header `X-Tenant-Id` dal claim `tid`
+  - Blocca richieste senza token valido
+- `azurerm_private_endpoint` per APIM gateway
+
+---
+
+### 1.06 — `modules/cosmos/`
+
+**Risorse:**
+- `azurerm_cosmosdb_account`: NoSQL, `public_network_access_enabled = false`, multi-region failover
+- `azurerm_cosmosdb_sql_database` "chatbot"
+- `azurerm_cosmosdb_sql_container` "sessions" — partition key `/tenant_id`
+- `azurerm_cosmosdb_sql_container` "messages" — partition key `/tenant_id`
+- `azurerm_private_endpoint` (subnet private_endpoints)
+- `azurerm_role_assignment` — `Cosmos DB Built-in Data Contributor` alla MI
+
+---
+
+### 1.07 — `modules/ai_search/`
+
+**Risorse:**
+- `azurerm_search_service` SKU Standard (semantic ranker richiede Standard+)
+- `azurerm_search_service` con `public_network_access_enabled = false`
+- `azurerm_private_endpoint`
+- Output: endpoint, admin_key (salvato in Key Vault via `azurerm_key_vault_secret`)
+
+> **Nota:** Il filtro `tenant_id` è implementato a livello applicativo nelle query (non Terraform). Terraform crea solo l'indice base.
+
+---
+
+### 1.08 — `modules/postgres/`
+
+**Risorse:**
+- `azurerm_postgresql_flexible_server` con `delegated_subnet_id`, `private_dns_zone_id`
+- SKU `GeneralPurpose_Standard_D2s_v3`, versione 16
+- `azurerm_postgresql_flexible_server_database` "chatbot"
+- `azurerm_postgresql_flexible_server_configuration` — abilita `azure.extensions = VECTOR`
+- **Password random** → salvata in Key Vault via `azurerm_key_vault_secret`
+- Nessun IP pubblico (integrazione VNet diretta)
+
+---
+
+### 1.09 — `modules/storage/`
+
+**Risorse:**
+- `azurerm_storage_account` con `public_network_access_enabled = false`, `https_only = true`
+- `azurerm_storage_container` "tenants" (private access)
+- `azurerm_private_endpoint` per blob
+- `azurerm_role_assignment` — `Storage Blob Data Contributor` alla MI
+
+---
+
+### 1.10 — `modules/openai/`
+
+**Risorse:**
+- `azurerm_cognitive_account` (kind = "OpenAI") in location primaria
+- `azurerm_cognitive_account` (kind = "OpenAI") in location secondaria (failover)
+- `azurerm_cognitive_deployment` — `gpt-4o` + `text-embedding-3-large`
+- `azurerm_private_endpoint` per entrambi
+- `azurerm_role_assignment` — `Cognitive Services OpenAI User` alla MI
+- Nessuna API key nel codice — solo Managed Identity
+
+---
+
+### 1.11 — `modules/messaging/`
+
+**Risorse:**
+- `azurerm_servicebus_namespace` Premium SKU (richiesto per Private Endpoints)
+- `azurerm_servicebus_queue` "document-processing", "embedding-jobs", "notifications"
+- `azurerm_servicebus_topic` "chat-events" con subscription per ogni consumer
+- `azurerm_private_endpoint` per Service Bus
+- `azurerm_eventgrid_system_topic` per Blob Storage events → Service Bus
+- `azurerm_role_assignment` — `Azure Service Bus Data Owner` alla MI
+
+---
+
+### 1.12 — `modules/aci/`
+
+**Risorse:**
+- `azurerm_container_group` template (usato via `azurerm_resource_group_template_deployment` a runtime)
+- `azurerm_subnet` dedicata per ACI (delegated a `Microsoft.ContainerInstance/containerGroups`)
+- `azurerm_network_profile` — ACI dentro VNet
+- Policy NSG: ACI → Internet DENY (sandboxing), ACI → Service Bus ALLOW
+
+---
+
+### 1.13 — `modules/monitoring/`
+
+**Risorse:**
+- `azurerm_log_analytics_workspace` retention 90 giorni
+- `azurerm_application_insights` linked al workspace
+- `azurerm_monitor_diagnostic_setting` per ogni risorsa (APIM, Cosmos, OpenAI, etc.)
+- `azurerm_monitor_action_group` "critical-alerts" (email + webhook)
+- `azurerm_monitor_metric_alert` per: latenza APIM > 2s, errori OpenAI > 5%, Cosmos RU > 80%
+- Output: `instrumentation_key` + `connection_string` → Key Vault
+
+---
+
+### Environments
+
+#### [NEW] environments/dev.tfvars
+```hcl
+environment       = "dev"
+location          = "westeurope"
+location_secondary = "northeurope"
+project_name      = "chatbot"
+aks_sku           = "Standard_D2s_v3"
+cosmos_throughput = 400
+apim_sku          = "Developer_1"
+```
+
+#### [NEW] environments/staging.tfvars + prod.tfvars
+- Stessi parametri con SKU più grandi
+- `prod` ha geo-redundancy su Cosmos e OpenAI failover attivo
+
+---
+
+## Verification Plan
+
+### Automated (Terraform)
+
+```bash
+cd terraform/
+
+# 1. Format check
+terraform fmt -check -recursive
+
+# 2. Init con backend locale per test
+terraform init -backend=false
+
+# 3. Validate sintassi tutti i moduli
+terraform validate
+
+# 4. Plan in dry-run (richiede credenziali Azure — usa SPN dev)
+terraform plan -var-file=environments/dev.tfvars \
+  -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+  -out=tfplan.binary
+
+# 5. Show plan leggibile
+terraform show -json tfplan.binary | jq '.resource_changes | length'
+```
+
+### Checklist manuale
+
+- [ ] Ogni `azurerm_private_endpoint` punta alla subnet `private_endpoints`
+- [ ] Nessun `public_network_access_enabled = true`
+- [ ] Nessuna API key o password in chiaro nei `.tf` (solo `random_password` + Key Vault)
+- [ ] Ogni risorsa ha `tags = local.common_tags` con `tenant`, `environment`
+- [ ] Gli outputs di ogni modulo sono documentati
