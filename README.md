@@ -81,17 +81,18 @@ Each organization (tenant) gets a fully isolated context: separate chat history,
 ## Features
 
 ### AI Models (Multi-tier)
-- **HOBA Mini** — GPT-4o Mini. Fast, economical, streaming via SSE.
-- **HOBA Pro** — GPT-4o. Balanced, powerful, streaming via SSE.
-- **HOBA Deep** — O1/reasoning model. Deep thinking, synchronous response with full reasoning trace and artifact output.
+- **HOBA Mini** (`thinking_level: fast`) — GPT-4o Mini. Fast, economical, streaming via SSE.
+- **HOBA Pro** (`thinking_level: normal`) — GPT-4o. Balanced, powerful, streaming via SSE.
+- **HOBA Deep** (`thinking_level: deep`) — O1 tier routed via `ThinkingOrchestrator`. With `isPensieroProfondoAttivo=true`, activates the full LangGraph agent loop with Skill Engine tools.
 
 ### Document Intelligence (RAG)
 - Upload PDF, Word, TXT, Markdown files per tenant
 - Parsing via Azure Document Intelligence (OCR + layout extraction)
 - Hybrid search: vector (Azure AI Search) + BM25 with RRF re-ranking
-- Cross-encoder re-ranker for precision
+- Cross-encoder re-ranker for precision (`engine/rag/reranker.py`)
 - Semantic chunking: 512 tokens, 64-token overlap
 - Embeddings: `text-embedding-3-small`
+- Citation extraction returned inline per message (`engine/rag/citations.py`)
 
 ### Semantic Long-Term Memory
 - PostgreSQL + pgvector stores message embeddings per tenant
@@ -126,22 +127,26 @@ Each organization (tenant) gets a fully isolated context: separate chat history,
 - `reflection` — session reflection and learning
 
 ### Security
-- Azure AD / MSAL authentication (Bearer JWT)
+- Azure AD / MSAL authentication — scopes: `User.Read`, `openid`, `profile`
 - `DefaultAzureCredential` (Managed Identity) — no hardcoded keys in production
 - Redis-backed rate limiting per tenant
-- Azure Content Safety filter on every message
-- Security headers middleware (HSTS, CSP, X-Frame-Options, etc.)
+- Azure Content Safety filter on every inbound message
+- Prompt injection detection (`engine/ai/security.py`)
+- Context window management to prevent token overflow (`engine/ai/token_counter.py`)
+- Security headers middleware (HSTS, CSP, X-Frame-Options, X-Content-Type-Options)
 - Secrets managed via Azure Key Vault
 
 ### Frontend
 - React 18 + Vite + TypeScript
 - Tailwind CSS, Framer Motion, Lucide icons
-- Zustand for global state (auth, tenant, chat store)
-- SSE streaming for token-by-token display
-- Canvas panel: renders artifact output (code, markdown) without leaving chat
-- Microsoft Teams JS SDK integration
-- Admin panel for tenant management
-- SuperAdmin dashboard for platform-level control
+- Zustand for global state (`authStore`, `chatStore`, `documentStore`, `uiStore`)
+- SSE streaming via `ReadableStream` reader (not `EventSource`) for token-by-token display
+- Canvas panel: renders artifact output (code, HTML, SVG, charts) without leaving chat
+- Microsoft Teams JS SDK integration (`TeamsContext`)
+- Vision / multimodal input: attach images sent to GPT-4o Vision (`image_url` field)
+- Slash command menu, typing indicators, recommendation banners
+- Admin panel (`TenantAdminConsole`), SuperAdmin dashboard (`SuperAdminConsole`)
+- ZeroClaw agent console (`ZeroClawConsole`)
 
 ---
 
@@ -188,17 +193,20 @@ docker compose up --build
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/` | Health check |
+| GET | `/` | Health check (`{"status": "healthy"}`) |
 | GET | `/health` | Detailed health status |
-| POST | `/api/v1/chat/message` | Send a chat message (SSE streaming) |
-| POST | `/api/v1/chat/deep` | Deep reasoning query (synchronous) |
-| GET | `/api/v1/conversations` | List conversations for current user |
+| GET | `/api/v1/chat/models` | List available AI models |
+| GET | `/api/v1/chat/skills` | List available skills from Skill Engine |
+| GET | `/api/v1/chat/history` | Chat history for a session |
+| POST | `/api/v1/chat/chat` | Send a message — standard or deep agent mode |
+| POST | `/api/v1/chat/stream` | Send a message with SSE streaming response |
+| GET | `/api/v1/conversations` | List conversations for current tenant/user |
 | POST | `/api/v1/documents/upload` | Upload a document for RAG indexing |
 | GET | `/api/v1/documents` | List indexed documents |
-| POST | `/api/v1/agents/run` | Trigger an autonomous DeepAgent run |
+| POST | `/api/v1/agents/run` | Trigger an autonomous Azure AI Projects agent run |
 | POST | `/api/v1/agent/run` | ZeroClaw external agent gateway |
+| GET | `/api/v1/agent/status` | ZeroClaw gateway health check |
 | GET | `/api/v1/admin/stats` | Tenant admin statistics |
-| GET | `/api/v1/superadmin/tenants` | Platform-level tenant management |
 | POST | `/api/v1/webhooks` | Incoming webhook receiver |
 
 Full interactive documentation available at `/docs` (Swagger UI) and `/redoc`.
