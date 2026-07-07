@@ -81,8 +81,7 @@ Each organization (tenant) gets a fully isolated context: separate chat history,
 ## Features
 
 <p align="center">
-  <img src="docs/ui_chat.png" alt="HIBACore Chat Interface" width="48%" style="margin-right: 1%;"/>
-  <img src="docs/ui_deep_mode.png" alt="HIBACore Deep Mode" width="48%"/>
+  <img src="docs/Screenshot.jpg" alt="HIBACore Chat Interface" width="100%"/>
 </p>
 
 ### AI Models (Multi-tier)
