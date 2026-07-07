@@ -20,6 +20,16 @@
 
 ---
 
+## 🚀 One-Click Deployment
+
+Deploy the latest version of HIBACore directly to your Azure environment using our automated GitHub Actions pipeline.
+
+[![Deploy to Azure via GitHub Actions](https://img.shields.io/badge/Deploy_to_Azure-GitHub_Actions-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white)](https://github.com/Ayoub-Sekoum/HIBACore/actions/workflows/deploy-azure.yml)
+
+> **Note:** Infrastructure (App Services, PostgreSQL, etc.) must be provisioned first using the provided Terraform scripts in `infrastructure/terraform`. Once resources exist, use the button above to deploy the code.
+
+---
+
 > **Release v0.3.5.** HIBACore is under active development. APIs may change, features are incomplete, and it is not recommended for production use without thorough testing. Contributions and feedback are welcome.
 
 ---
