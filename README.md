@@ -22,11 +22,11 @@
 
 ## 🚀 One-Click Deployment
 
-Crea le risorse (App Services, Piano Hosting, ecc.) e collega in automatico questa repository per il deploy diretto premendo il tasto qui sotto:
+Automatically provision the basic resources (App Services, Hosting Plan, etc.) and connect this repository for direct deployment by clicking the button below:
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAyoub-Sekoum%2FHIBACore%2Fmain%2Fazuredeploy.json)
 
-> **Nota:** Questo bottone crea un ambiente Quickstart di base (Backend e Frontend). Per l'infrastruttura completa Enterprise con database vettoriali e reti private, consulta la cartella `infrastructure/terraform`.
+> **Note:** This button creates a basic Quickstart environment (Backend and Frontend). For the complete Enterprise infrastructure featuring vector databases and private networks, please refer to the `infrastructure/terraform` folder.
 
 ---
 
