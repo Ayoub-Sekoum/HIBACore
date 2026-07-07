@@ -3,7 +3,7 @@ import { Sparkles } from 'lucide-react';
 
 /**
  * ThinkingBadge
- * Visualizza lo stato di "ragionamento" dell'AI (es. per modelli o1 o GPT-5).
+ * Displays the "reasoning" state of the AI ​​(e.g. for o1 or GPT-5 models).
  */
 const ThinkingBadge: React.FC = () => {
   return (

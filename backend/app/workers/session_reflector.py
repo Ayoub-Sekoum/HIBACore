@@ -23,7 +23,7 @@ async def reflect_on_session(
     
     orchestrator = ThinkingOrchestrator()
     
-    # 1. Analisi della sessione con GPT-4o-mini
+    # 1. Session analysis with GPT-4o-mini
     history_text = "\n".join([f"{m.get('role')}: {m.get('content')}" for m in messages])
     
     prompt = f"""
@@ -60,7 +60,7 @@ async def reflect_on_session(
             if content:
                 reflection_json += content
         
-        # Pulizia JSON
+        # JSON cleanup
         if "```json" in reflection_json:
             reflection_json = reflection_json.split("```json")[1].split("```")[0].strip()
         
@@ -69,9 +69,9 @@ async def reflect_on_session(
         reflection_data["tenant_id"] = tenant_id
         reflection_data["updated_at"] = datetime.utcnow().isoformat()
         
-        # 2. Salva in Cosmos DB (Utilizziamo un container dedicato 'Continuity' o simili)
-        # Per ora memorizziamo come metadato della sessione o in un nuovo container via cosmos_service.
-        # Immaginiamo che il cosmos_service abbia un metodo per salvare riflessioni.
+        # 2. Save to Cosmos DB (We use a dedicated container 'Continuity' or similar)
+        # For now we store as session metadata or in a new container via cosmos_service.
+        # Let's imagine that cosmos_service has a method for saving reflections.
         await cosmos_memory_service.save_session_reflection(session_id, tenant_id, reflection_data)
         
         logger.info("session_reflection_saved", session_id=session_id)

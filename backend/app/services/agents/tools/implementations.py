@@ -70,7 +70,7 @@ async def webhook_send(url: str, payload: dict[str, Any]) -> str:
         except Exception as e:
             raise AppException(ErrorCode.TOOL_502, detail=f"Webhook fallito: {e}")
 
-# Registrazione dei tool all'avvio
+# Registering tools at startup
 ToolRegistry.register("web_search", web_search)
 ToolRegistry.register("file_read", file_read)
 ToolRegistry.register("code_execution", code_execution)

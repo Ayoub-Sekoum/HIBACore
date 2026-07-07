@@ -119,7 +119,7 @@ const ChatContainer: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-[var(--wrapper-bg)]">
-      {/* Premium Header */}
+      {/* Premium Headers*/}
       <header className="h-16 flex items-center justify-between px-4 md:px-8 shrink-0 border-b md:border-none border-[var(--border-light)] dark:border-[#333] transition-colors">
         <div className="flex items-center gap-2">
           <div className="relative group">
@@ -138,7 +138,7 @@ const ChatContainer: React.FC = () => {
               <ChevronDown size={14} className={`text-gray-400 transition-transform ${showModelMenu ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Model Dropdown Menu */}
+            {/* Model Dropdown Menu*/}
             <AnimatePresence>
               {showModelMenu && (
                 <>
@@ -195,7 +195,7 @@ const ChatContainer: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content Area */}
+      {/* Main Content Area*/}
       <div className={`flex-1 flex overflow-hidden transition-all duration-500 ${activeArtifact ? 'mr-0 md:mr-[50%] lg:mr-[45%]' : ''}`}>
         <main className="flex-1 overflow-y-auto flex flex-col items-center pt-12 px-6 pb-32">
           <AnimatePresence>
@@ -217,7 +217,7 @@ const ChatContainer: React.FC = () => {
                   <span className="text-red-600">What's on your mind?</span>
                 </h1>
   
-                {/* Quick Actions Grid */}
+                {/* Quick Actions Grid*/}
                 <div className="w-full max-w-[800px] grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
                   {[
                     { icon: Plus, text: "Write a to-do list for a personal project" },
@@ -253,7 +253,7 @@ const ChatContainer: React.FC = () => {
       </AnimatePresence>
 
 
-      {/* Floating Input Area */}
+      {/* Floating Input Area*/}
       <div className={`absolute bottom-0 left-0 w-full p-6 transition-all duration-500 ${activeArtifact ? 'pr-0 md:pr-[50%] lg:pr-[45%]' : ''} bg-gradient-to-t from-[var(--wrapper-bg)] via-[var(--wrapper-bg)] to-transparent`}>
         <div className="max-w-3xl mx-auto">
           <ChatInput onSend={handleSend} disabled={isStreaming} />

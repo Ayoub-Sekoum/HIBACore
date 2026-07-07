@@ -16,7 +16,7 @@ const LegalPage: React.FC = () => {
                     <p className="text-xl text-[var(--apple-text-muted)] leading-relaxed">Le policy e i termini di utilizzo di HOBA AI.</p>
                 </div>
 
-                {/* Content Cards */}
+                {/* Content Cards*/}
                 <div className="space-y-12">
                     <section className="bg-white dark:bg-[#1d1d1f] p-10 rounded-[40px] border border-[var(--border-light)] shadow-sm">
                         <div className="flex items-center gap-4 mb-8">

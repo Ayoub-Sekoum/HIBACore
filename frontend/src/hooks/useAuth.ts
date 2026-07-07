@@ -9,11 +9,11 @@ export const useAuth = () => {
   const { setUser, setTenantId, setIsAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    // Sincronizza l'istanza MSAL con il client API per i token
+    // Synchronize the MSAL instance with the API client for tokens
     setMsalInstance(instance);
 
     if (account) {
-      // Estrae il Tenant ID dai claim dell'account (tid è il Tenant ID in Entra ID)
+      // Extracts the Tenant ID from the account claims (tid is the Tenant ID in Entra ID)
       const tenantId = (account.idTokenClaims as any)?.tid || import.meta.env.VITE_AZURE_AD_TENANT_ID;
       
       setUser({

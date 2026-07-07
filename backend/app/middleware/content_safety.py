@@ -9,7 +9,7 @@ import structlog
 try:
     from azure.ai.contentsafety import ContentSafetyClient
 except ImportError:
-    ContentSafetyClient = None  # modulo non installato, middleware disabilitato
+    ContentSafetyClient = None  # module not installed, middleware disabled
 from azure.core.credentials import AzureKeyCredential
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint

@@ -33,8 +33,8 @@ async def check_policy(
     Fallisce CHIUSO: se non riesce a caricare la policy → DENY.
     """
     try:
-        # Step 1: Carica policy (Mock per ora, verrà collegato a policy_store)
-        # TODO: integrare get_tenant_policy(tenant_id)
+        # Step 1: Load policy (Mock for now, it will be linked to policy_store)
+        # TODO: integrate get_tenant_policy(tenant_id)
         from app.services.policy.policy_store import get_tenant_policy
         policy = await get_tenant_policy(tenant_id)
         
@@ -45,7 +45,7 @@ async def check_policy(
                 error_code="POLICY_001"
             )
 
-        # Step 2: Verifica stato tenant
+        # Step 2: Check tenant status
         if policy.get("status") == "suspended":
             return PolicyDecision(
                 decision="DENY",
@@ -53,7 +53,7 @@ async def check_policy(
                 error_code="POLICY_001"
             )
 
-        # Step 3: Verifica tool allowlist del tenant
+        # Step 3: Check the tenant's allowlist tool
         allowlist = policy.get("tool_allowlist", [])
         if tool_name not in allowlist:
             return PolicyDecision(
@@ -62,7 +62,7 @@ async def check_policy(
                 error_code="POLICY_002"
             )
 
-        # Step 4: Verifica piano tariffario
+        # Step 4: Check tariff plan
         tenant_plan = policy.get("plan", "base")
         if not can_plan_use_tool(tenant_plan, tool_name):
             return PolicyDecision(
@@ -71,10 +71,10 @@ async def check_policy(
                 error_code="POLICY_003"
             )
 
-        # Step 5: Verifica URL (se applicabile)
+        # Step 5: Verify URL (if applicable)
         if target_url:
             net_allowlist = policy.get("network_allowlist", [])
-            # Semplice check dominio per ora
+            # Simple domain check for now
             if not any(domain in target_url for domain in net_allowlist):
                 return PolicyDecision(
                     decision="DENY",
@@ -82,7 +82,7 @@ async def check_policy(
                     error_code="POLICY_006"
                 )
 
-        # Step 6: Verifica Thinking Level
+        # Step 6: Check Thinking Level
         if thinking_level:
             max_thinking = PLAN_DEFINITIONS.get(tenant_plan).max_thinking_level
             # normal < deep
@@ -94,7 +94,7 @@ async def check_policy(
                     error_code="POLICY_005"
                 )
 
-        # Step 7: Verifica Rischio Alto
+        # Step 7: Check for High Risk
         if action_risk_level == "high":
             if policy.get("require_approval_for_high_risk", True):
                 return PolicyDecision(
@@ -104,7 +104,7 @@ async def check_policy(
                     requires_approval=True
                 )
 
-        # Step 8: Successo
+        # Step 8: Success
         return PolicyDecision(decision="ALLOW", reason="Policy check passed")
 
     except Exception as e:

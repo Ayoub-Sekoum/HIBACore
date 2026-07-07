@@ -16,7 +16,7 @@ from app.services.policy.notification_service import notification_service
 
 logger = structlog.get_logger(__name__)
 
-# Cache in-memory semplice come fallback se Redis non è configurato/accessibile
+# Simple in-memory cache as a fallback if Redis is not configured/accessible
 _policy_cache: dict[str, dict[str, Any]] = {}
 
 class PolicyStore:
@@ -41,7 +41,7 @@ class PolicyStore:
     async def get_tenant_policy(self, tenant_id: str) -> Optional[dict[str, Any]]:
         """Legge la policy da Cosmos DB con cache locale (60s simulation)."""
         if tenant_id in _policy_cache:
-            # TODO: implementare logica di scadenza reale o Redis
+            # TODO: Implement real or Redis deadline logic
             return _policy_cache[tenant_id]
 
         try:
@@ -84,7 +84,7 @@ class PolicyStore:
             await container.upsert_item(body=policy_doc)
             _policy_cache[tenant_id] = policy_doc
             
-            # Notifica real-time
+            # Real-time notification
             await notification_service.broadcast(
                 tenant_id, "policy_created", f"Nuova policy per tenant {tenant_id} creata."
             )
@@ -119,7 +119,7 @@ class PolicyStore:
             await container.replace_item(item=policy["id"], body=policy)
             _policy_cache[tenant_id] = policy
             
-            # Notifica real-time
+            # Real-time notification
             await notification_service.broadcast(
                 tenant_id, "policy_updated", f"Policy aggiornata da {updated_by}", {"fields": list(updates.keys())}
             )

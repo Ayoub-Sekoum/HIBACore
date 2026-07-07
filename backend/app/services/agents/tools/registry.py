@@ -15,10 +15,10 @@ class ToolRegistry:
     """
     _tools: dict[str, Callable] = {}
 
-    # Task 5.03: Mock tabella Cosmos DB tenant_tool_allowlist
-    # Formato: { "tenant_id": ["tool_name1", "tool_name2"] }
+    # Task 5.03: Mock Cosmos DB table tenant_tool_allowlist
+    # Format: { "tenant_id": ["tool_name1", "tool_name2"] }
     _tenant_allowlist: dict[str, list[str]] = {
-        # Configurazione di default
+        # Default configuration
         "default_tenant": ["web_search", "file_read"]
     }
 
@@ -35,7 +35,7 @@ class ToolRegistry:
         """
         from app.middleware.policy_guard import PolicyGuard
 
-        # 1. Verifica policy prima di procedere
+        # 1. Check policy before proceeding
         decision = await PolicyGuard.check(
             tenant_id=tenant_id,
             tool_name=tool_name,
@@ -44,7 +44,7 @@ class ToolRegistry:
 
         if decision.decision == "DENY":
             logger.warning("tool_execution_denied_by_policy", tenant_id=tenant_id, tool_name=tool_name)
-            # Ritorna errore strutturato anziché lanciare eccezione bloccante (Task 12.05)
+            # Return structured error instead of throwing blocking exception (Task 12.05)
             return {
                 "success": False,
                 "error_code": decision.error_code,
@@ -53,14 +53,14 @@ class ToolRegistry:
 
         if decision.decision == "PENDING":
             logger.info("tool_execution_pending_approval", tenant_id=tenant_id, tool_name=tool_name)
-            # Todo: Salvare in coda approvazione reale
+            # Todo: Save in real approval queue
             return {
                 "success": False,
                 "error_code": "POLICY_004",
                 "message": "Azione in attesa di approvazione del tuo amministratore."
             }
 
-        # 2. Procedi con l'esecuzione se ALLOW
+        # 2. Proceed with execution if ALLOW
         if tool_name not in cls._tools:
             raise AppException(ErrorCode.TOOL_504, detail=f"Tool '{tool_name}' not found in registry")
 

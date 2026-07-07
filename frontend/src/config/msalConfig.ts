@@ -1,7 +1,7 @@
 import { Configuration, LogLevel } from "@azure/msal-browser";
 
 /**
- * MSAL Configuration for Azure AD / Entra ID.
+ * MSAL Configuration for Azure AD / Login ID.
  * Task 6.02 — Teams Bot SSO & Enterprise Auth.
  */
 export const msalConfig: Configuration = {

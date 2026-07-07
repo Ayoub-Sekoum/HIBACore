@@ -22,17 +22,17 @@ from app.core.context import (
     set_correlation_id,
 )
 
-# ── PII Masking Patterns ────────────────────────────────────────────────────
+# ── PII Masking Patterns ────────────────────────── ──────────────────────────
 
 _PII_PATTERNS = [
     # Email: mario.rossi@example.com → ***@***.com
     (re.compile(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"),
      lambda m: f"***@{m.group().split('@')[1].split('.')[0]}***.{m.group().split('.')[-1]}"),
 
-    # Telefono italiano
+    # Italian telephone
     (re.compile(r"(\+39[\s\-]?)[\d\s\-]{6,15}"), "\\1***"),
 
-    # Codice fiscale
+    # Tax ID code
     (re.compile(r"\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b"), "[CF_REDACTED]"),
 
     # JWT Bearer token

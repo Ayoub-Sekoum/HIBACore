@@ -13,14 +13,14 @@ from app.engine.rag.retriever import SearchResult
 
 logger = structlog.get_logger(__name__)
 
-# Cache globale per il modello (Lazy loading)
+# Global cache for the model (Lazy loading)
 _model = None
 
 def _get_model():
     global _model
     if _model is None:
         try:
-            # Modello cross-encoder specifico
+            # Specific cross-encoder model
             _model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
         except Exception as e:
             logger.error("reranker_model_load_failed", error=str(e))
@@ -39,7 +39,7 @@ async def rerank_chunks(
     Usa sentence-transformers cross-encoder/ms-marco-MiniLM-L-6-v2.
     Regola 3: tenant_id come primo parametro.
     """
-    # Regola 3: Isolamento tenant (Verifica coerenza dati in ingresso)
+    # Rule 3: Tenant isolation (Check incoming data consistency)
     if not tenant_id:
         raise AppException(ErrorCode.TENANT_101)
     
@@ -49,25 +49,25 @@ async def rerank_chunks(
     try:
         model = _get_model()
         
-        # Preparazione coppie (query, content) per il modello
+        # Preparing pairs (query, content) for the model
         pairs = [[query, chunk.content] for chunk in chunks]
         
-        # Calcolo dei punteggi (non bloccante grazie alla cache del modello)
+        # Score calculation (non-blocking thanks to model cache)
         scores = model.predict(pairs)
         
-        # Aggiornamento score e filtraggio
+        # Score update and filtering
         reranked_results = []
         for idx, score in enumerate(scores):
-            # Normalizzazione minima (il modello ms-marco può dare score fuori 0-1)
-            # Ma il piano chiede filtro < 0.3
+            # Minimum normalization (the ms-marco model can give scores outside 0-1)
+            # But the plan asks for filter < 0.3
             if score >= min_score:
                 chunk = chunks[idx].model_copy()
                 chunk.score = float(score)
-                # Verifica extra: il chunk deve appartenere al tenant corretto
+                # Extra check: The chunk must belong to the correct tenant
                 if chunk.tenant_id == tenant_id:
                     reranked_results.append(chunk)
 
-        # Ordinamento decrescente
+        # Descending sort
         reranked_results.sort(key=lambda x: x.score, reverse=True)
         
         return reranked_results[:top_k]

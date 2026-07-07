@@ -58,8 +58,8 @@ def create_app() -> FastAPI:
 
     origins = config_manager.settings.CORS_ORIGINS
 
-    # ORDINE INVERSO: l ultimo add_middleware e il primo eseguito
-    # Esecuzione reale: CORS -> CorrelationId -> Tenant -> RateLimit -> ContentSafety -> Security
+    # REVERSE ORDER: the last add_middleware is the first one executed
+    # Real execution: CORS -> CorrelationId -> Tenant -> RateLimit -> ContentSafety -> Security
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(ContentSafetyMiddleware)
     app.add_middleware(RateLimitMiddleware)
@@ -108,7 +108,7 @@ def create_app() -> FastAPI:
     from app.api.v1.conversations import router as conv_router
     app.include_router(conv_router, prefix="/api/v1/conversations", tags=["Conversations"])
     
-    # DISABILITATO TEMPORANEAMENTE: pacchetto azure.ai.voicelive non installabile
+    # TEMPORARILY DISABLED: azure.ai.voicelive package cannot be installed
     # from app.api.v1.voice import router as voice_router
     # app.include_router(voice_router, prefix="/api/v1/voice", tags=["Voice"])
     

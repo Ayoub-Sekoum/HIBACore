@@ -9,14 +9,14 @@ from __future__ import annotations
 
 from contextvars import ContextVar
 
-# ── Context Variables (thread-safe per asyncio) ────────────────
+# ── Context Variables (thread-safe for asyncio) ────────────────
 _tenant_id_var: ContextVar[str | None] = ContextVar("tenant_id", default=None)
 _user_id_var: ContextVar[str | None] = ContextVar("user_id", default=None)
 _correlation_id_var: ContextVar[str | None] = ContextVar("correlation_id", default=None)
 _user_roles_var: ContextVar[list[str]] = ContextVar("user_roles", default=[])
 
 
-# ── Getters ────────────────────────────────────────────────────
+# ── Getters ────────────────────────── ──────────────────────────
 
 def get_tenant_id() -> str | None:
     """Restituisce il tenant_id dal context (estratto dal JWT)."""
@@ -38,7 +38,7 @@ def get_user_roles() -> list[str]:
     return _user_roles_var.get()
 
 
-# ── Setters (usati solo dai middleware) ─────────────────────────
+# ── Setters (used only by middleware) ─────────────────────────
 
 def set_tenant_id(value: str) -> None:
     """Setta il tenant_id nel context. Solo per middleware."""

@@ -32,7 +32,7 @@ logger = structlog.get_logger(__name__)
 _bearer_scheme = HTTPBearer(auto_error=False)
 
 
-# ── Configurazione (da env per flessibilità dev/prod) ──────────
+# ── Configuration (from env for dev/prod flexibility) ──────────
 
 def _get_entra_config() -> dict[str, str]:
     """Configurazione Entra ID da variabili d'ambiente."""
@@ -44,7 +44,7 @@ def _get_entra_config() -> dict[str, str]:
             f"https://login.microsoftonline.com/{os.getenv('AZURE_TENANT_ID', '')}/v2.0",
         ),
         "audience": os.getenv("AZURE_CLIENT_ID", ""),
-        # In produzione i JWK vengono cachati e verificati
+        # In production the JWKs are cached and verified
         "jwks_uri": os.getenv(
             "AZURE_JWKS_URI",
             f"https://login.microsoftonline.com/{os.getenv('AZURE_TENANT_ID', '')}/discovery/v2.0/keys",
@@ -52,7 +52,7 @@ def _get_entra_config() -> dict[str, str]:
     }
 
 
-# ── JWT Decoder ────────────────────────────────────────────────
+# ── JWT Decoder ──────────────────────── ────────────────────────
 
 async def decode_jwt_token(token: str) -> dict[str, Any]:
     """Decodifica e valida un JWT da Azure Entra ID.
@@ -63,7 +63,7 @@ async def decode_jwt_token(token: str) -> dict[str, Any]:
     skip_validation = os.getenv("SKIP_JWT_VALIDATION", "false").lower() == "true"
 
     if skip_validation:
-        # Dev mode: decodifica senza verifica firma
+        # Dev mode: decoding without signature verification
         return jwt.get_unverified_claims(token)
 
     config = _get_entra_config()
@@ -71,7 +71,7 @@ async def decode_jwt_token(token: str) -> dict[str, Any]:
     try:
         claims = jwt.decode(
             token,
-            key="",  # In produzione: usa JWKS cachati
+            key="",  # In production: Use cached JWKS
             algorithms=["RS256"],
             audience=config["audience"],
             issuer=config["issuer"],
@@ -88,7 +88,7 @@ async def decode_jwt_token(token: str) -> dict[str, Any]:
         raise AppException(ErrorCode.AUTH_002, detail=str(exc)) from exc
 
 
-# ── Dependency: Estrai dati dal JWT e popola ContextVars ────────
+# ── Dependency: Extract data from JWT and populate ContextVars ────────
 
 async def get_current_user(
     request: Request,
@@ -102,10 +102,10 @@ async def get_current_user(
     Returns:
         Dict con claims JWT (tid, oid, roles, name, etc.)
     """
-    # Priorità 1: JWT dal Bearer token
+    # Priority 1: JWT from Bearer token
     if credentials and credentials.credentials:
         claims = await decode_jwt_token(credentials.credentials)
-    # Priorità 2: Headers da APIM (JWT già validato dal gateway)
+    # Priority 2: Headers from APIM (JWT already validated by the gateway)
     elif request.headers.get("x-tenant-id"):
         claims = {
             "tid": request.headers.get("x-tenant-id"),
@@ -115,12 +115,12 @@ async def get_current_user(
     else:
         raise AppException(ErrorCode.AUTH_001)
 
-    # Estrai tenant_id (obbligatorio)
+    # Extract tenant_id (required)
     tenant_id = claims.get("tid")
     if not tenant_id:
         raise AppException(ErrorCode.TENANT_101)
 
-    # Popola ContextVars
+    # Populate ContextVars
     set_tenant_id(tenant_id)
     set_user_id(claims.get("oid", "unknown"))
     set_user_roles(claims.get("roles", []))
@@ -128,7 +128,7 @@ async def get_current_user(
     return claims
 
 
-# ── Dependency: tenant_id dal context (per gli endpoint) ────────
+# ── Dependency: tenant_id from context (for endpoints) ────────
 
 async def require_tenant(
     _user: dict[str, Any] = Depends(get_current_user),

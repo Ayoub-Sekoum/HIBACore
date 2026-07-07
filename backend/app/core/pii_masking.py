@@ -10,14 +10,14 @@ from __future__ import annotations
 import re
 from typing import Any
 
-# ── Pattern di PII da mascherare ────────────────────────────────
+# ── PII pattern to mask ────────────────────────────────
 
 _PII_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     # Email: mario@example.com → ***@***.com
     (re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"), "***@***.***"),
-    # Telefono italiano: +39... → +39***
+    # Italian telephone: +39... → +39***
     (re.compile(r"\+?\d{2,3}[\s.-]?\d{6,10}"), "+XX***"),
-    # Codice fiscale italiano: 16 chars alfanumerici
+    # Italian tax code: 16 alphanumeric chars
     (re.compile(r"\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b"), "CF_REDACTED"),
     # JWT token: eyJ... → [REDACTED_JWT]
     (re.compile(r"eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+"), "[REDACTED_JWT]"),

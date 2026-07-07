@@ -19,7 +19,7 @@ logger = structlog.get_logger(__name__)
 
 class Entity(BaseModel):
     name: str
-    type: str  # Persona, Azienda, Progetto, Prodotto, Luogo, Data, Numero
+    type: str  # Person, Company, Project, Product, Place, Date, Number
 
 class Relation(BaseModel):
     from_entity: str = Field(..., alias="from")
@@ -30,7 +30,7 @@ class EntityExtractionResult(BaseModel):
     entities: List[Entity] = []
     relations: List[Relation] = []
 
-# Cache per il client Gremlin
+# Cache for the Gremlin client
 _gremlin_client = None
 
 def _get_gremlin_client():
@@ -41,7 +41,7 @@ def _get_gremlin_client():
         if not endpoint:
             return None
         
-        # Trasformiamo l'endpoint https in gremlin e aggiungiamo la porta 443
+        # Let's transform the https endpoint into gremlin and add port 443
         gremlin_endpoint = endpoint.replace("https://", "wss://").replace(".documents.azure.com", ".gremlin.cosmos.azure.com")
         if ":443" not in gremlin_endpoint:
             gremlin_endpoint = f"{gremlin_endpoint}:443/"
@@ -63,7 +63,7 @@ import re
 
 def _sanitize_gremlin_string(text: str) -> str:
     """Applica una whitelist stringente per prevenire Gremlin Injection."""
-    # Consente solo lettere, numeri, spazi, trattini, undescore, punti e virgole
+    # Allows only letters, numbers, spaces, hyphens, undescore, periods and commas
     clean = re.sub(r'[^a-zA-Z0-9\s\-_.,]', '', text).strip()
     return clean
 
@@ -123,9 +123,9 @@ async def upsert_graph_entities(
     try:
         now = datetime.now(timezone.utc).isoformat()
         
-        # PASSO 2 — Upsert nodi
+        # STEP 2 — Upsert nodes
         for entity in result.entities:
-            # Protezione injection Gremlin stringente
+            # Strict Gremlin injection protection
             name = _sanitize_gremlin_string(entity.name)
             etype = _sanitize_gremlin_string(entity.type)
             
@@ -136,11 +136,11 @@ async def upsert_graph_entities(
                 f"  addV('{etype}').property('name', '{name}').property('tenant_id', '{tenant_id}').property('created_at', '{now}').property('last_seen', '{now}')"
                 f")"
             )
-            # Eseguiamo in modo asincrono (simulato per il client sincrono di gremlin-python)
+            # We run asynchronously (simulated for the gremlin-python synchronous client)
             loop = asyncio.get_running_loop()
             await loop.run_in_executor(None, gremlin_client.submit, query)
 
-        # PASSO 3 — Upsert archi
+        # STEP 3 — Upsert arches
         for rel in result.relations:
             f_name = _sanitize_gremlin_string(rel.from_entity)
             t_name = _sanitize_gremlin_string(rel.to_entity)
@@ -174,7 +174,7 @@ async def get_graph_context(
         return ""
 
     try:
-        # (1) Estrazione entità dalla query
+        # (1) Extracting entities from the query
         extraction = await extract_entities(tenant_id, query)
         if not extraction.entities:
             return ""
@@ -186,7 +186,7 @@ async def get_graph_context(
         context_facts = []
         for entity in extraction.entities:
             name = entity.name.replace("'", "\\'")
-            # Query Gremlin per prendere i vicini a 1 salto
+            # Gremlin query to take neighbors at 1 hop
             gremlin_query = f"g.V().has('tenant_id', '{tenant_id}').has('name', '{name}').bothE().as('e').otherV().as('v').select('e','v').limit(20)"
             
             loop = asyncio.get_running_loop()
@@ -196,9 +196,9 @@ async def get_graph_context(
             for res in results:
                 edge = res['e']
                 other_v = res['v']
-                # Costruiamo una frase in linguaggio naturale
-                # Nota: le proprietà del vertex/edge dipendono dalla GraphSON serialization
-                # Qui semplifichiamo assumendo una certa struttura
+                # Let's build a sentence in natural language
+                # Note: Vertex/edge properties depend on GraphSON serialization
+                # Here we simplify by assuming some structure
                 if 'label' in edge and 'properties' in other_v:
                     other_name = other_v['properties']['name'][0]['value']
                     context_facts.append(f"{entity.name} {edge['label']} {other_name}.")
@@ -207,7 +207,7 @@ async def get_graph_context(
             return ""
 
         context_text = "Dati relazionali trovati:\n" + "\n".join(set(context_facts))
-        return context_text[:max_tokens * 4] # Approssimazione grossolana tokens-chars
+        return context_text[:max_tokens * 4] # Coarse tokens-chars approximation
 
     except Exception as e:
         logger.warning("graph_context_failed", tenant_id=tenant_id, error=str(e))

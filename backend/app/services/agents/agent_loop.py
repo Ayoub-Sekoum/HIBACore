@@ -60,7 +60,7 @@ class AgentOrchestrator:
                 tools=[CodeInterpreterTool(), FileSearchTool()], # type: ignore
             )
 
-            # 2. Create Thread
+            # 2. Create Threads
             thread = await client.agents.threads.create() # type: ignore
 
             # 3. Add Message

@@ -56,11 +56,11 @@ async def sync_workspace_to_azure():
         async with client:
             container_client = client.get_container_client(container_name)
             
-            # Garantisce l'esistenza del container
+            # Guarantees the existence of the container
             if not await container_client.exists():
                 await container_client.create_container()
 
-            # Scansione e upload (Sequential/Async)
+            # Scan and upload (Sequential/Async)
             for root, _, files in os.walk(workspace):
                 for file_name in files:
                     local_path = os.path.join(root, file_name)
@@ -68,7 +68,7 @@ async def sync_workspace_to_azure():
                     
                     blob_client = container_client.get_blob_client(relative_path)
                     
-                    # Upload best-effort
+                    # Best-effort upload
                     try:
                         with open(local_path, "rb") as data:
                             await blob_client.upload_blob(data, overwrite=True)

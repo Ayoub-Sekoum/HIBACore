@@ -21,7 +21,7 @@ async def retrieve_semantic_memory(query: str, tenant_id: str, top_k: int = 5) -
 
     try:
         await llm_client.embed([query])
-        # In a real environment, query PostgreSQL:
+        # In a real environment, PostgreSQL query:
         # SELECT content FROM message_embeddings
         # WHERE tenant_id = $1 AND embedding <=> $2 < 0.25 (which means similarity > 0.75)
         # ORDER BY embedding <=> $2 LIMIT $3

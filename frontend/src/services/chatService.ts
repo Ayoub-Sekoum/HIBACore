@@ -184,10 +184,10 @@ export const chatService = {
     const formData = new FormData();
     formData.append('file', file);
     
-    // Non settiamo Content-Type manuale per FormData, il browser lo fa con il boundary corretto.
-    // Ma aggiungiamo Authorization e TenantId.
+    // We don't set the Content-Type manually for FormData, the browser does it with the correct boundary.
+    // But let's add Authorization and TenantId.
     const headers = await getAuthHeaders();
-    // Rimuoviamo Content-Type se presente per far decidere al browser (FormData)
+    // We remove Content-Type if present to let the browser decide (FormData)
     delete (headers as any)['Content-Type'];
 
     const response = await fetch(`${API_BASE_URL}/documents/upload`, {

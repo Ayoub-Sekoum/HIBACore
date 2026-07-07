@@ -29,7 +29,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       className={`flex w-full mb-8 ${isUser ? 'justify-end' : 'justify-start'}`}
     >
       <div className={`flex max-w-[85%] md:max-w-[80%] gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-        {/* Avatar Area */}
+        {/* Avatar Area*/}
         <div className="shrink-0 mt-1">
           <div className={`w-9 h-9 rounded-full flex items-center justify-center border shadow-sm ${
             isUser 
@@ -48,7 +48,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           </div>
         </div>
 
-        {/* Content Area */}
+        {/* Content Area*/}
         <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
           <div className={`px-5 py-3.5 rounded-2xl shadow-sm text-[15px] leading-relaxed transition-colors ${
             isUser 
@@ -65,7 +65,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               ))}
             </div>
 
-            {/* Artifacts Area (Task: Canvas) */}
+            {/* Artifacts Area (Task: Canvas)*/}
             {!isUser && message.artifacts && message.artifacts.length > 0 && (
                 <div className="mt-4 flex flex-col gap-2">
                     {message.artifacts.map((art: any, i: number) => (
@@ -91,7 +91,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 </div>
             )}
             
-            {/* Reasoning / Thinking section (Task: DeepAgents logs) */}
+            {/* Reasoning / Thinking section (Task: DeepAgents logs)*/}
             {!isUser && message.reasoning && (
                 <div className="mt-3 overflow-hidden border-t border-gray-100">
                     <details className="group">
@@ -108,7 +108,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             )}
 
 
-            {/* Citations Tag Area */}
+            {/* Citations Tag Area*/}
             {!isUser && message.citations && message.citations.length > 0 && (
               <div className="mt-4 pt-3 border-t border-[var(--border-light)] flex flex-wrap gap-2">
                  <p className="w-full text-[10px] font-bold uppercase tracking-wider text-[var(--apple-text-muted)] mb-1">Sources</p>
@@ -126,7 +126,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             )}
           </div>
 
-          {/* Action Bar */}
+          {/* Action Bar*/}
           {!isUser && message.content && (
             <div className="flex items-center gap-1 mt-2 px-2">
               <button title="Copy" className="p-1.5 rounded-lg text-gray-400 hover:text-[var(--brand-red)] hover:bg-gray-50 transition-colors">

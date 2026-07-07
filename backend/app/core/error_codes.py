@@ -33,19 +33,19 @@ class ErrorCode(Enum):
     - INFRA: infrastruttura
     """
 
-    # ── AUTH ──────────────────────────────────────────────────
+    # ── AUTH ───────────────────────── ─────────────────────────
     AUTH_001 = ErrorInfo(401, "Token JWT mancante.", "Authentication")
     AUTH_002 = ErrorInfo(401, "Token JWT scaduto.", "Authentication")
     AUTH_003 = ErrorInfo(403, "Audience o Issuer non valido.", "Authentication")
     AUTH_004 = ErrorInfo(403, "Scope insufficiente per questa operazione.", "Authorization")
 
-    # ── TENANT ───────────────────────────────────────────────
+    # ── TENANT ─────────────────────── ────────────────────────
     TENANT_101 = ErrorInfo(403, "Tenant ID mancante nel context.", "Tenant Isolation")
     TENANT_102 = ErrorInfo(403, "Accesso cross-tenant rilevato e bloccato.", "Tenant Isolation")
     TENANT_103 = ErrorInfo(429, "Rate limit per-tenant superato.", "Rate Limiting")
     TENANT_104 = ErrorInfo(404, "Tenant non trovato.", "Tenant Management")
 
-    # ── AI ENGINE ────────────────────────────────────────────
+    # ── AI ENGINE ────────────────────── ──────────────────────
     AI_201 = ErrorInfo(503, "Servizio AI temporaneamente non disponibile.", "AI Engine")
     AI_202 = ErrorInfo(429, "Rate limit del provider AI superato.", "AI Engine")
     AI_203 = ErrorInfo(503, "Failover fallito su tutti i provider AI.", "AI Engine")
@@ -53,40 +53,40 @@ class ErrorCode(Enum):
     AI_205 = ErrorInfo(400, "Contesto troppo lungo per il modello selezionato.", "AI Engine")
     AI_206 = ErrorInfo(422, "Risposta del modello vuota o malformata.", "AI Engine")
 
-    # ── RAG ───────────────────────────────────────────────────
+    # ── RAG ───────────────────────── ──────────────────────────
     RAG_301 = ErrorInfo(422, "Formato documento non supportato.", "RAG Pipeline")
     RAG_302 = ErrorInfo(422, "Documento troppo grande (max 100MB).", "RAG Pipeline")
     RAG_303 = ErrorInfo(500, "Parsing del documento fallito.", "RAG Pipeline")
     RAG_304 = ErrorInfo(500, "Generazione embedding fallita.", "RAG Pipeline")
     RAG_305 = ErrorInfo(500, "Indicizzazione AI Search fallita.", "RAG Pipeline")
 
-    # ── MEMORY ────────────────────────────────────────────────
+    # ── MEMORY ──────────────────────── ────────────────────────
     MEM_401 = ErrorInfo(503, "Database chat non raggiungibile.", "Memory")
     MEM_402 = ErrorInfo(503, "Vector database non raggiungibile.", "Memory")
     MEM_403 = ErrorInfo(500, "Operazione Knowledge Graph fallita.", "Memory")
 
-    # ── TOOLS ─────────────────────────────────────────────────
+    # ── TOOLS ──────────────────────── ─────────────────────────
     TOOL_501 = ErrorInfo(403, "Tool non autorizzato per questo tenant.", "Agent Tools")
     TOOL_502 = ErrorInfo(500, "Esecuzione sandbox fallita.", "Agent Tools")
     TOOL_503 = ErrorInfo(408, "Tool timeout superato (>30s).", "Agent Tools")
     TOOL_504 = ErrorInfo(422, "Argomenti tool non validi.", "Agent Tools")
 
-    # ── UPLOAD ────────────────────────────────────────────────
+    # ── UPLOAD ──────────────────────── ────────────────────────
     UPLOAD_601 = ErrorInfo(422, "Tipo file non supportato.", "Upload")
     UPLOAD_602 = ErrorInfo(422, "Malware rilevato nel file.", "Upload")
     UPLOAD_603 = ErrorInfo(413, "File troppo grande.", "Upload")
 
-    # ── VOICE ─────────────────────────────────────────────────
+    # ── VOICE ──────────────────────── ─────────────────────────
     VOICE_701 = ErrorInfo(503, "Servizio STT non disponibile.", "Voice")
     VOICE_702 = ErrorInfo(503, "Servizio TTS non disponibile.", "Voice")
     VOICE_703 = ErrorInfo(408, "WebRTC connection timeout.", "Voice")
 
-    # ── INFRA ─────────────────────────────────────────────────
+    # ── INFRA ──────────────────────── ─────────────────────────
     INFRA_901 = ErrorInfo(500, "Key Vault non raggiungibile.", "Infrastructure")
     INFRA_902 = ErrorInfo(500, "Service Bus non disponibile.", "Infrastructure")
     INFRA_903 = ErrorInfo(500, "Servizio di telemetria non disponibile.", "Infrastructure")
 
-    # ── POLICY ENGINE ──────────────────────────────────────────
+    # ── POLICY ENGINE ───────────────────── ─────────────────────
     POLICY_001 = ErrorInfo(403, "Il tuo account è sospeso. Contatta il supporto.", "Policy Security")
     POLICY_002 = ErrorInfo(403, "Questa funzione non è attiva per il tuo account.", "Policy Permission")
     POLICY_003 = ErrorInfo(403, "Questa funzione non è disponibile nel tuo piano.", "Policy Plan")

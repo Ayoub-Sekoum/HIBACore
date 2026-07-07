@@ -62,7 +62,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             **exc.extra
         }
 
-        # Log di livello diverso in base alla categoria
+        # Different level logs based on category
         if exc.error_code.category in ["Infrastructure", "AI Security", "Tenant Isolation"]:
             logger.error("app_exception_critical", **log_data, exc_info=True)
         else:

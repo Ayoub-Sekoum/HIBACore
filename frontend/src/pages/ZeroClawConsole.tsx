@@ -16,13 +16,13 @@ const ZeroClawConsole: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
 
-  // Splash timeout
+  // Splash times out
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2800);
     return () => clearTimeout(timer);
   }, []);
 
-  // Polling status ogni 10 secondi
+  // Polling status every 10 seconds
   useEffect(() => {
     const fetchStatus = async () => {
       try {
@@ -67,7 +67,7 @@ const ZeroClawConsole: React.FC = () => {
       <div className="flex-1 flex flex-col items-center justify-center bg-black overflow-hidden relative">
         <div className="absolute inset-0 bg-radial-gradient from-red-600/20 to-transparent opacity-30 animate-pulse" />
         <div className="relative flex flex-col items-center scale-110">
-            {/* Spinning Neural Core */}
+            {/* Spinning Neural Core*/}
             <div className="relative w-32 h-32 mb-12">
                 <div className="absolute inset-0 rounded-[40px] border-4 border-red-600/20 animate-[spin_8s_linear_infinite]" />
                 <div className="absolute inset-4 rounded-[30px] border-4 border-orange-500/20 animate-[spin_4s_linear_infinite_reverse]" />
@@ -123,7 +123,7 @@ const ZeroClawConsole: React.FC = () => {
           </div>
         </div>
 
-        {/* Neural Skills Visualization */}
+        {/* Neural Skills Visualization*/}
         <div className="space-y-6">
             <div className="flex items-center gap-3 px-2">
                 <Terminal size={14} className="text-red-600" />
@@ -149,7 +149,7 @@ const ZeroClawConsole: React.FC = () => {
             </div>
         </div>
 
-        {/* Action Command Center - High Tech Version */}
+        {/* Action Command Center - High Tech Version*/}
         <div className="bg-[#111] rounded-[48px] p-10 shadow-[0_40px_100px_rgba(0,0,0,0.3)] relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-tr from-red-600/10 via-transparent to-transparent pointer-events-none" />
           <div className="flex flex-col gap-8 relative z-10">
@@ -180,7 +180,7 @@ const ZeroClawConsole: React.FC = () => {
           </div>
         </div>
 
-        {/* Real-time Telemetry Log - Full Terminal */}
+        {/* Real-time Telemetry Log - Full Terminal*/}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
             <div className="lg:col-span-2 bg-black rounded-[48px] border border-white/10 flex flex-col overflow-hidden shadow-2xl">
                 <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 bg-gray-900/40">
@@ -211,7 +211,7 @@ const ZeroClawConsole: React.FC = () => {
                 </div>
             </div>
 
-            {/* Side Status Panel */}
+            {/* Side Status Panel*/}
             <div className="space-y-6">
                 <div className="bg-white rounded-[40px] p-8 border border-gray-100 shadow-xl overflow-hidden relative">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl" />

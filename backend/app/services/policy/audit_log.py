@@ -63,7 +63,7 @@ class AuditLogService:
             logger.info("audit_log_created", tenant_id=tenant_id, action=action)
         except Exception as e:
             logger.warning("audit_log_failed_falling_back_to_structlog", error=str(e))
-            # Fallback a logging strutturato se Cosmos è giù
+            # Fallback to structured logging if Cosmos is down
             logger.info("policy_audit_event", **audit_entry)
 
     async def log_policy_denial(self, tenant_id: str, actor_id: str, tool_name: str, reason: str, error_code: str):

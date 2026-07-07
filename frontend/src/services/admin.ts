@@ -7,7 +7,7 @@ async function get_token() {
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length > 0) {
         const response = await msalInstance.acquireTokenSilent({
-            scopes: ["User.Read"], // O gli scope necessari per la tua API
+            scopes: ["User.Read"], // Or the scopes needed for your API
             account: accounts[0]
         });
         return response.accessToken;

@@ -15,7 +15,7 @@ logger = structlog.get_logger(__name__)
 SB_FQDN = os.getenv("AZURE_SERVICE_BUS_FQDN", "")
 
 async def _send_message(queue_name: str, payload: dict[str, Any]) -> None:
-    # Se Service Bus non è configurato, skip silenzioso (evita timeout su dummy endpoint)
+    # If Service Bus is not configured, silent skip (avoids timeout on dummy endpoint)
     if not SB_FQDN or "dummy" in SB_FQDN:
         logger.debug("service_bus_not_configured_skipping", queue=queue_name)
         return

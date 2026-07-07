@@ -38,7 +38,7 @@ def require_role(*allowed_roles: str):
     ) -> dict[str, Any]:
         user_roles = get_user_roles()
 
-        # Verifica se l'utente ha almeno uno dei ruoli richiesti
+        # Check if the user has at least one of the required roles
         if not any(role in user_roles for role in allowed_roles):
             logger.warning(
                 "access_denied",

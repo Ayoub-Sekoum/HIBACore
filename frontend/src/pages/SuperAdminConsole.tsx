@@ -37,7 +37,7 @@ const SuperAdminConsole: React.FC = () => {
 
     return (
         <div className="min-h-screen p-8 space-y-10 animate-reveal">
-            {/* Header */}
+            {/* Header*/}
             <header className="flex justify-between items-center">
                 <div>
                     <h1 className="text-4xl font-black tracking-tight">Super Admin Console</h1>
@@ -48,7 +48,7 @@ const SuperAdminConsole: React.FC = () => {
                 </button>
             </header>
 
-            {/* Stats Row */}
+            {/* Stats Row*/}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
                     { label: 'Tenant Attivi', value: '12', icon: Users, color: 'text-blue-500' },
@@ -66,9 +66,9 @@ const SuperAdminConsole: React.FC = () => {
                 ))}
             </div>
 
-            {/* Main Content */}
+            {/* Main Content*/}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Tenants Grid */}
+                {/* Tenants Grid*/}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-bold flex items-center gap-3">
@@ -90,7 +90,7 @@ const SuperAdminConsole: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Right Sidebar: Global Audit */}
+                {/* Right Sidebar: Global Audit*/}
                 <div className="space-y-6">
                     <h2 className="text-2xl font-bold flex items-center gap-3">
                         <Activity className="w-6 h-6 text-orange-500" /> Audit Globale

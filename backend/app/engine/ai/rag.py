@@ -30,7 +30,7 @@ async def retrieve_and_rerank(
     """
     llm_client = ResilientLLMClient()
 
-    # 1. Embed query
+    # 1. Embed queries
     try:
         query_vector = await llm_client.embed([query], model="text-embedding-3-small")
         vector = query_vector[0] if query_vector else []
@@ -91,7 +91,7 @@ async def retrieve_and_rerank(
 
     context_str = "\n\n".join(context_chunks)
 
-    # 5. Integrate Long-term Memory
+    # 5. Integrated Long-term Memory
     if long_term_memory:
         memory_chunks = ["--- RICORDI PASSATI ---"]
         for m in long_term_memory:

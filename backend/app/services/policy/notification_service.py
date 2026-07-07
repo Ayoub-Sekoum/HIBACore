@@ -11,7 +11,7 @@ logger = structlog.get_logger(__name__)
 
 class NotificationService:
     def __init__(self):
-        # Mappa tenant_id -> set di code (una per ogni admin connesso)
+        # Map tenant_id -> set of queues (one for each connected admin)
         self.queues: dict[str, set[asyncio.Queue]] = {}
 
     async def subscribe(self, tenant_id: str) -> AsyncGenerator[str, None]:
@@ -25,7 +25,7 @@ class NotificationService:
         
         try:
             while True:
-                # Aspetta nuove notifiche
+                # Wait for new notifications
                 data = await queue.get()
                 yield f"event: notification\ndata: {json.dumps(data)}\n\n"
         finally:
@@ -46,7 +46,7 @@ class NotificationService:
             "timestamp": asyncio.get_event_loop().time()
         }
 
-        # Distribuisci a tutte le code attive
+        # Deploy to all active queues
         for queue in self.queues[tenant_id]:
             await queue.put(payload)
         

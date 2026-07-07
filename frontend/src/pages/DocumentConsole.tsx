@@ -17,7 +17,7 @@ const DocumentConsole: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Search & Filters */}
+                {/* Search & Filters*/}
                 <div className="flex items-center gap-4 mb-6">
                     <div className="relative flex-1">
                         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -36,7 +36,7 @@ const DocumentConsole: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Documents Grid */}
+                {/* Documents Grid*/}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
                         { name: 'Policy Aziendale v2.pdf', type: 'PDF', size: '1.2MB', date: '2 h fa' },

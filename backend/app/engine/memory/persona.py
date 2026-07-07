@@ -22,7 +22,7 @@ logger = structlog.get_logger(__name__)
 
 class UserPersona(BaseModel):
     """Schema per il profilo utente persistente."""
-    technical_level: float = Field(0.5, ge=0, le=1)  # 0: base, 1: expert
+    technical_level: float = Field(0.5, ge=0, le=1)  # 0: basic, 1: expert
     communication_style: float = Field(0.5, ge=0, le=1) # 0: casual, 1: formal
     preferred_language: str = "it"
     top_interests: dict[str, float] = Field(default_factory=dict)
@@ -34,7 +34,7 @@ class PersonaExtraction(BaseModel):
     communication_style: float
     detected_interests: list[str]
 
-# Cache client Cosmos SQL
+# Cosmos SQL client cache
 _cosmos_client = None
 
 async def _get_persona_container():
@@ -78,12 +78,12 @@ async def get_user_persona(
         if not container:
             return UserPersona()
 
-        # Query per id (che sarà user_id) e partition key (tenant_id)
+        # Query for id (which will be user_id) and partition key (tenant_id)
         try:
             item = await container.read_item(item=user_id, partition_key=tenant_id)
             return UserPersona.model_validate(item)
         except Exception:
-            # Se non esiste, ritorna default
+            # If it does not exist, it returns default
             return UserPersona()
 
     except Exception as e:
@@ -103,24 +103,24 @@ async def update_user_persona(
     if not tenant_id:
         raise AppException(ErrorCode.TENANT_101)
 
-    # 1. Estrazione dal testo corrente via LLM
+    # 1. Extraction from the current text via LLM
     new_data = await _extract_persona_from_text(tenant_id, session_text)
     if not new_data:
         return await get_user_persona(tenant_id, user_id)
 
-    # 2. Recupero vecchio profilo
+    # 2. Recover old profile
     current_persona = await get_user_persona(tenant_id, user_id)
 
-    # 3. Media Mobile Pesata e Topic Decay
+    # 3. Weighted Moving Average and Topic Decay
     new_interests = {}
     
-    # - Ogni sessione applica topic_score *= 0.95 per topic NON menzionati
+    # - Each session applies topic_score *= 0.95 for topics NOT mentioned
     for topic, score in current_persona.top_interests.items():
         new_score = score * 0.95
         if new_score >= 0.05:
             new_interests[topic] = new_score
             
-    # - Ogni sessione aggiunge +0.2 per topic menzionati (capped a 1.0)
+    # - Each session adds +0.2 per topic mentioned (capped at 1.0)
     for topic in new_data.detected_interests:
         t = topic.lower()
         new_interests[t] = min(1.0, new_interests.get(t, 0.5) + 0.2)
@@ -133,7 +133,7 @@ async def update_user_persona(
         last_updated=None
     )
 
-    # 4. Salvataggio persistente
+    # 4. Persistent saving
     try:
         container = await _get_persona_container()
         if container:

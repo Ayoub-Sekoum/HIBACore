@@ -80,7 +80,7 @@ async def build_memory_context(
 
     memory_service = _get_memory_service()
 
-    # 1. Parallel Fetching (Verifica 4 - Low Latency)
+    # 1. Parallel Fetching (Check 4 - Low Latency)
     async def get_history_safe():
         if session_id:
             return await memory_service.get_history(session_id, tenant_id, limit=config_manager.settings.AI_CHAT_HISTORY_LIMIT)

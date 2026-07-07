@@ -25,7 +25,7 @@ async def inbound_webhook(
 
     logger.info("inbound_webhook_received", tenant_id=tenant_id, event=event)
 
-    # QUI: invio payload a service bus queue (agent-triggers) per non bloccare
+    # HERE: sending payload to service bus queue (agent-triggers) to not block
     # await publish_to_agent_trigger_queue(tenant_id, event, payload)
 
     return APIResponse.ok(data={"status": "accepted", "event": event})

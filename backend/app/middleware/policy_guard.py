@@ -25,7 +25,7 @@ class PolicyGuard:
             logger.error("policy_guard_missing_tenant_id", tool_name=tool_name)
             return PolicyDecision(decision="DENY", reason="Tenant ID missing", error_code="TENANT_101")
 
-        # Determinazione del livello di rischio (semplificata)
+        # Determination of risk level (simplified)
         high_risk_tools = ["shell_exec", "webhook_send", "delete_file"]
         risk_level = "high" if tool_name in high_risk_tools else "low"
 

@@ -7,10 +7,10 @@ import { msalConfig } from './config/msalConfig'
 import App from './App'
 import './index.css'
 
-// ── FORZA LIGHT MODE ────────────────────────────────────────
-// Rimuove la classe "dark" da <html> se il sistema operativo
-// è in dark mode. L'app usa sempre il tema light Apple style.
-// Rimuovi questo blocco solo se implementi un toggle dark/light.
+// ── FORZA LIGHT MODE ──────────────────── ────────────────────
+// Removes the "dark" class from <html> if the operating system
+// It's in dark mode. The app always uses the light Apple style theme.
+// Remove this block only if you implement a dark/light toggle.
 document.documentElement.classList.remove('dark')
 // ────────────────────────────────────────────────────────────
 

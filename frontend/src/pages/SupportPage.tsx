@@ -12,7 +12,7 @@ const SupportPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Grid of Support Options */}
+                {/* Grid of Support Options*/}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                     {[
                         { title: 'Chat Live', desc: 'Parla ora con un assistente HOBA', icon: <MessageSquare className="text-blue-500" />, action: 'Avvia Chat' },
@@ -32,7 +32,7 @@ const SupportPage: React.FC = () => {
                     ))}
                 </div>
 
-                {/* FAQ Section Style */}
+                {/* FAQ Section Style*/}
                 <div className="bg-white p-10 rounded-[40px] border border-[var(--border-light)]">
                     <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
                         <ShieldCheck size={28} className="text-red-500" /> FAQ e Sicurezza

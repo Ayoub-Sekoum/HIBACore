@@ -31,7 +31,7 @@ async def get_tenant_detail(
     if not policy:
         raise AppException(ErrorCode.TENANT_104)
     
-    # Audit recente
+    # Recent audit
     audit = await audit_log_service.get_audit_log(tenant_id=tenant_id, limit=10)
     
     return {
@@ -61,7 +61,7 @@ async def update_tenant_policy(
         is_super_admin=True
     )
 
-    # Log audit
+    # Audit logs
     for field, new_val in updates.items():
         await audit_log_service.log_policy_change(
             tenant_id=tenant_id,

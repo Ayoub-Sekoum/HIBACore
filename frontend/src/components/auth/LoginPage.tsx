@@ -50,7 +50,7 @@ const LoginPage: React.FC = () => {
     return (
         <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'dark bg-black' : 'bg-[#f5f5f7]'} flex items-center justify-center p-0 overflow-hidden font-sans`}>
             
-            {/* Theme Toggle */}
+            {/* Theme Toggle*/}
             <button 
                 onClick={toggleTheme}
                 className="absolute top-8 right-8 w-11 h-11 rounded-full flex items-center justify-center glass-effect z-50 transition-transform active:scale-95"
@@ -58,19 +58,19 @@ const LoginPage: React.FC = () => {
                 {theme === 'light' ? <Moon size={20} className="text-[#1d1d1f]" /> : <Sun size={20} className="text-[#f5f5f7]" />}
             </button>
 
-            {/* Background Mountain SVG */}
+            {/* Background Mountain SVG*/}
             <div className="absolute inset-0 z-0 flex items-end pointer-events-none">
                 <svg viewBox="0 0 1000 400" preserveAspectRatio="xMidYMax slice" className="w-full h-full opacity-100 transition-all duration-700">
                     <rect width="1000" height="400" fill={theme === 'dark' ? '#111' : '#f5f5f7'} />
                     
-                    {/* Base Scura della Montagna */}
+                    {/* Dark Mountain Base*/}
                     <path d="M 0 350 L 60 320 L 120 340 L 200 310 L 270 280 L 320 220 L 360 170 L 390 190 L 420 210 L 470 120 L 520 180 L 580 40 L 620 90 L 650 140 L 720 130 L 800 200 L 880 230 L 950 280 L 1050 290 L 1200 300 L 1200 400 L 0 400 Z" fill={theme === 'dark' ? '#0a0a0c' : '#242831'} />
 
-                    {/* Dettagli Picco Sinistro */}
+                    {/* Left Peak Details*/}
                     <polygon points="360,170 320,220 340,230 310,270 350,250 365,280 380,230" fill={theme === 'dark' ? '#1a1c22' : '#9096a1'} />
                     <polygon points="360,170 380,230 365,280 380,290 410,240 390,190" fill={theme === 'dark' ? '#2a2f3a' : '#d3d7df'} />
 
-                    {/* PICCHI ILLUMINATI con Classe Sunrise */}
+                    {/* ILLUMINATED PEAKS with Sunrise Class*/}
                     <g className="sunrise-sweep">
                         <polygon points="470,120 430,160 450,170 410,220 440,230 470,180" fill="#ff525c" />
                         <polygon points="470,120 470,180 440,230 480,250 520,180" fill="#d33e48" />
@@ -82,13 +82,13 @@ const LoginPage: React.FC = () => {
                 </svg>
             </div>
 
-            {/* Login Card */}
+            {/* Login Card*/}
             <motion.div 
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 className={`w-full max-w-[380px] glass-effect rounded-[24px] p-10 z-10 relative flex flex-col items-center text-center shadow-[0_20px_40px_rgba(0,0,0,0.03)] ${error ? 'shake-animation border-red-500/30' : ''}`}
             >
-                {/* Logo Area */}
+                {/* Area logo*/}
                 <svg className="w-12 h-auto mb-6" viewBox="0 0 100 85">
                     <path className="path-main" d="M50 5 L95 80 L78 80 L50 35 L22 80 L5 80 Z" />
                 </svg>
@@ -128,7 +128,7 @@ const LoginPage: React.FC = () => {
                     )}
                 </button>
 
-                {/* Footer Links */}
+                {/* Footer Links*/}
                 <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2">
                     <button className="text-[11px] font-bold uppercase tracking-widest text-[var(--apple-text)] hover:text-[var(--brand-red)] transition-colors">Privacy</button>
                     <button className="text-[11px] font-bold uppercase tracking-widest text-[var(--apple-text)] hover:text-[var(--brand-red)] transition-colors">Terms</button>
@@ -141,12 +141,12 @@ const LoginPage: React.FC = () => {
                 </div>
             </motion.div>
 
-            {/* Version Badge */}
+            {/* Version Badge*/}
             <div className="absolute bottom-6 left-0 w-full flex justify-center pointer-events-none">
                 <p className="text-[10px] tracking-[0.25em] font-extrabold text-[var(--apple-text-muted)] opacity-30 uppercase">© 2026 HOBA AI ENTERPRISE • v1.0.0</p>
             </div>
 
-            {/* Help Modal Placeholder */}
+            {/* Help Modal Placeholder*/}
             {showHelp && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={() => setShowHelp(false)}></div>

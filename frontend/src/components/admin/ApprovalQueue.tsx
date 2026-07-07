@@ -22,7 +22,7 @@ const ApprovalQueue: React.FC<Props> = ({ requests, onActionCompleted }) => {
     const handleAction = async (id: string, _action: 'approve' | 'reject') => {
         setProcessingId(id);
         try {
-            // Nota: endpoint mockati nel backend ma pronti per l'integrazione
+            // Note: Endpoints mocked in the backend but ready for integration
             // await adminService.super_process_approval(id, action);
             if (onActionCompleted) onActionCompleted();
         } catch (error) {

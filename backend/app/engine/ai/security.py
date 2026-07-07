@@ -8,7 +8,7 @@ from app.core.exceptions import AppException
 
 logger = structlog.get_logger(__name__)
 
-# Pattern matching regex per injection comuni (inglese + italiano)
+# Pattern matching regex for common injections (English + Italian)
 INJECTION_PATTERNS = [
     # English patterns
     re.compile(r"ignore\s+(all\s+)?previous\s+instructions", re.IGNORECASE),

@@ -41,7 +41,7 @@ def build_rag_context(
         current_tokens = 0
         
         for chunk in chunks:
-            # Verifica isolamento tenant
+            # Check tenant isolation
             if chunk.tenant_id != tenant_id:
                 continue
                 
@@ -77,7 +77,7 @@ def extract_citations(
 
     citations = []
     
-    # Assumiamo che chunks siano già ordinati per score dal reranker
+    # We assume that chunks are already sorted by score by the reranker
     for chunk in chunks:
         if chunk.tenant_id != tenant_id:
             continue

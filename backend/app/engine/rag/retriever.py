@@ -99,7 +99,7 @@ async def close_search_client() -> None:
         _search_client_instance = None
 
 
-# ── Public API ────────────────────────────────────────────────
+# ── Public API ──────────────────────── ────────────────────────
 
 async def hybrid_search(
     query: str,
@@ -111,15 +111,15 @@ async def hybrid_search(
     Hybrid search: vettoriale + BM25 + RRF fusion + semantic ranker.
     Sempre filtra per tenant_id — mai senza.
     """
-    # Isolamento tenant SEMPRE + Sanitizzazione (D.1)
+    # Tenant isolation ALWAYS + Sanitization (D.1)
     if not tenant_id or not re.match(r'^[a-zA-Z0-9\-_]+$', tenant_id):
         logger.error("invalid_tenant_id_injection_attempt", tenant_id=tenant_id)
         raise AppException(ErrorCode.TENANT_101)
 
-    # PASSO 1 — Genera embedding della query utente (Cached — E.2)
+    # STEP 1 — Generate user query embedding (Cached — E.2)
     embedding = await _get_cached_embedding(query, tenant_id)
 
-    # PASSO 2 & 3 — Parallel Retrieval (Vettoriale + Keyword)
+    # STEP 2 & 3 — Parallel Retrieval (Vector + Keyword)
     try:
         retrieval_top_k = config_manager.settings.AI_RETRIEVER_TOP_K
         vector_task = _vector_search(embedding, tenant_id, top_k=retrieval_top_k)
@@ -132,23 +132,23 @@ async def hybrid_search(
         logger.error("rag_parallel_search_failed", tenant_id=tenant_id, error=str(e))
         raise AppException(ErrorCode.RAG_305)
 
-    # PASSO 4 — Reciprocal Rank Fusion (RRF)
-    # Formula: score = (1 / (60 + rank_vettoriale)) + (1 / (60 + rank_bm25))
+    # STEP 4 — Reciprocal Rank Fusion (RRF)
+    # Formula: score = (1 / (60 + rank_vector)) + (1 / (60 + rank_bm25))
     fused_results = _reciprocal_rank_fusion(vector_results, keyword_results)
 
-    # PASSO 5 — Semantic Ranker Azure (opzionale)
+    # STEP 5 — Semantic Ranker Azure (optional)
     if use_semantic_ranker:
         try:
             settings = get_settings()
             client = _get_search_client(settings)
             
-            # Eseguiamo una chiamata specifica per il re-ranking semantico sui top risultati fusi
-            # Azure AI Search richiede 'semantic' query type
+            # We perform a specific call for semantic re-ranking on the top fused results
+            # Azure AI Search requires 'semantic' query type
             semantic_results = await client.search(
                 search_text=query,
                 filter=f"tenant_id eq '{tenant_id}'",
                 query_type="semantic",
-                semantic_configuration_name="default", # Assumiamo configurazione 'default'
+                semantic_configuration_name="default", # Let's assume 'default' configuration
                 top=top_k,
                 select=["id", "tenant_id", "file_name", "page_number", "chunk_index", "content"]
             )
@@ -169,14 +169,14 @@ async def hybrid_search(
 
         except Exception as e:
             logger.warning("semantic_ranker_failed", tenant_id=tenant_id, error=str(e))
-            # Fallback al RRF se il semantic ranker fallisce (Configurazione o Limiti)
+            # Fallback to RRF if semantic ranker fails (Configuration or Limits)
             pass
 
-    # PASSO 6 — Restituisci risultato top_k richiesto
+    # STEP 6 — Return requested top_k result
     return fused_results[:top_k]
 
 
-# ── Private Helpers ───────────────────────────────────────────
+# ── Private Helpers ───────────────────── ──────────────────────
 
 async def _vector_search(
     embedding: list[float],

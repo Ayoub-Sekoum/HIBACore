@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 
 /**
  * ChatPage
- * Pagina principale della chat, include il ChatContainer.
- * In questa vista l'agente può agire nel contesto HOBA Enterprise.
+ * Main chat page, includes the ChatContainer.
+ * In this view the agent can act in the HOBA Enterprise context.
  */
 const ChatPage: React.FC = () => {
   return (

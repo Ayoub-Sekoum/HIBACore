@@ -26,13 +26,13 @@ from app.core.schemas import APIResponse
 
 logger = structlog.get_logger(__name__)
 
-# Route che non richiedono tenant_id
+# Routes that do not require tenant_id
 EXEMPT_PATHS = {
     "/", "/health", "/ready", "/docs", "/openapi.json",
     "/redoc", "/debug-cors", "/metrics",
 }
 
-# Tenant di sviluppo — usato quando SKIP_JWT_VALIDATION=true
+# Development tenant — used when SKIP_JWT_VALIDATION=true
 DEV_TENANT_ID = os.getenv("MICROSOFT_TENANT_ID", "79fea776-1896-4256-b418-2cca88af08ae")
 DEV_USER_ID   = "dev-user-local"
 SKIP_JWT      = os.getenv("SKIP_JWT_VALIDATION", "false").lower() == "true"
@@ -41,10 +41,10 @@ SKIP_JWT      = os.getenv("SKIP_JWT_VALIDATION", "false").lower() == "true"
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
 
-        # 1. Bypass per route pubbliche
+        # 1. Bypass for public routes
         if request.url.path in EXEMPT_PATHS:
             return await call_next(request)
-        # Bypass anche per path che iniziano con /_
+        # Bypass also for paths starting with /_
         if request.url.path.startswith("/_"):
             return await call_next(request)
 
@@ -52,7 +52,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
         correlation_id = request.headers.get("X-Correlation-Id", str(uuid.uuid4()))
         set_correlation_id(correlation_id)
 
-        # 3. Estrazione tenant_id
+        # 3. Tenant_id extraction
         tenant_id = request.headers.get("X-Tenant-Id")
         user_id   = request.headers.get("X-User-Id")
 
@@ -69,7 +69,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
                 except Exception as e:
                     logger.error("jwt_unexpected_error", error=str(e), path=request.url.path)
 
-        # 4. Fallback dev — se SKIP_JWT_VALIDATION=true non bloccare
+        # 4. Fallback dev — if SKIP_JWT_VALIDATION=true do not block
         if not tenant_id:
             if SKIP_JWT:
                 tenant_id = DEV_TENANT_ID
@@ -96,7 +96,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
                     headers={"X-Correlation-Id": correlation_id}
                 )
 
-        # 5. Imposta contesti
+        # 5. Set contexts
         set_tenant_id(tenant_id)
         if user_id:
             set_user_id(user_id)
@@ -108,7 +108,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
             path=request.url.path,
         )
 
-        # 6. Passa la richiesta
+        # 6. Pass the request
         try:
             response = await call_next(request)
         except AppException as exc:
@@ -121,7 +121,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
                 content=app_err_response.model_dump(mode="json")
             )
 
-        # 7. Header in uscita e pulizia
+        # 7. Outgoing headers and cleanup
         response.headers["X-Correlation-Id"] = correlation_id
         structlog.contextvars.clear_contextvars()
 

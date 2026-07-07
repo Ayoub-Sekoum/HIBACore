@@ -24,21 +24,21 @@ async def process_message_for_graph(
     logger.info("graph_worker_starting", tenant_id=tenant_id, user_id=user_id)
 
     try:
-        # PASSO 1 — Estrazione entità
+        # STEP 1 — Entity extraction
         extraction = await extract_entities(tenant_id, message_text)
         
-        # Se non ci sono entità, saltiamo
+        # If there are no entities, we skip
         if not extraction.entities:
             logger.info("graph_worker_no_entities", tenant_id=tenant_id)
             return
 
-        # PASSO 2 & 3 — Upsert nel grafo
+        # STEP 2 & 3 — Upsert into the graph
         await upsert_graph_entities(tenant_id, extraction)
         
         logger.info("graph_worker_success", tenant_id=tenant_id, entity_count=len(extraction.entities))
 
     except Exception as e:
-        # Fallimento asincrono: non blocchiamo mai il flusso principale
-        # ma segnaliamo nei log con codice MEM_403
+        # Asynchronous failure: We never block the main flow
+        # but we report it in the logs with code MEM_403
         logger.error("graph_worker_failed", tenant_id=tenant_id, error=str(e), code="MEM_403")
 

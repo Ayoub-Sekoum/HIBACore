@@ -43,6 +43,6 @@ async def run_agent(task: AgentTask, user=Depends(get_current_user)):
 
 @router.get("/logs")
 async def agent_logs():
-    # ZeroClaw non ha endpoint /logs — restituiamo placeholder
-    # In futuro: leggere da Cosmos DB o Azure Log Analytics
+    # ZeroClaw has no /logs endpoint — we return placeholder
+    # In the future: Read from Cosmos DB or Azure Log Analytics
     return {"logs": [], "note": "log streaming not yet implemented"}

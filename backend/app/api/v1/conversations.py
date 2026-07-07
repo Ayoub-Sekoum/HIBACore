@@ -60,7 +60,7 @@ async def export_conversation(
     if not history:
         raise AppException(ErrorCode.MEM_401, detail="Session not found or empty")
 
-    markdown_lines = [f"# Export Conversazione: {session_id}", ""]
+    markdown_lines = [f"# Export Conversation: {session_id}", ""]
 
     for msg in history:
         role = "Utente" if msg["role"] == "user" else "Assistente AI"

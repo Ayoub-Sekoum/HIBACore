@@ -7,7 +7,7 @@ interface ProgressBarProps {
 
 /**
  * ProgressBar Component
- * Stile Apple elegante per mostrare l'andamento di upload o elaborazione documenti.
+ * Elegant Apple style to show upload or document processing progress.
  */
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress, label }) => {
   return (

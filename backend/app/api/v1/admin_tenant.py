@@ -27,7 +27,7 @@ async def get_my_policy(
     if not policy:
         raise AppException(ErrorCode.TENANT_104)
     
-    # Rimuovi campi riservati
+    # Remove reserved fields
     reserved = ["admin_can_modify", "id", "partition_key", "type"]
     public_policy = {k: v for k, v in policy.items() if k not in reserved}
     
@@ -48,8 +48,8 @@ async def update_my_policy(
     if not old_policy:
          raise AppException(ErrorCode.TENANT_104)
 
-    # L'aggiornamento viene verificato all'interno di policy_store.update_tenant_policy
-    # se is_super_admin=False
+    # The update is verified within policy_store.update_tenant_policy
+    # if is_super_admin=False
     updated = await policy_store.update_tenant_policy(
         tenant_id=tenant_id,
         updates=updates,
@@ -57,7 +57,7 @@ async def update_my_policy(
         is_super_admin=False
     )
 
-    # Log audit
+    # Audit logs
     for field, new_val in updates.items():
         await audit_log_service.log_policy_change(
             tenant_id=tenant_id,

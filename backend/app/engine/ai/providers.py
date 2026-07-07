@@ -156,9 +156,9 @@ class ProviderFactory:
     def get_provider(cls, name: str = "azure_openai", **kwargs) -> LLMProvider:
         import os
 
-        # Usa Mock SOLO se non c'è endpoint Azure configurato (dev locale puro)
-        # NON usare SKIP_JWT_VALIDATION come proxy per il provider LLM:
-        # in Azure dev l'endpoint c'è anche se saltiamo JWT.
+        # Use Mock ONLY if there is no Azure endpoint configured (pure local dev)
+        # DO NOT use SKIP_JWT_VALIDATION as a proxy for the LLM provider:
+        # in Azure dev the endpoint is there even if we skip JWT.
         endpoint = os.getenv("AZURE_OPENAI_ENDPOINT", "")
         api_key = os.getenv("AZURE_OPENAI_API_KEY", "")
 

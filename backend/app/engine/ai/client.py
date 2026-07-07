@@ -76,7 +76,7 @@ def log_retry_attempt(retry_state):
             exception=str(retry_state.outcome.exception())
         )
 
-# Retry Policy: Max 3 tentativi, backoff esponenziale 2, 4 secondi.
+# Retry Policy: Max 3 attempts, exponential backoff 2, 4 seconds.
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
@@ -90,7 +90,7 @@ async def _execute_with_retry(
     stream: bool = False,
     **kwargs: Any
 ) -> Any:
-    # Esegue la vera chiamata (tenacity riproverà questa fn)
+    # Make the real call (tenacity will retry this fn)
     return await client_instance.chat.completions.create(
         model=model,
         messages=messages, # type: ignore
@@ -121,7 +121,7 @@ async def generate_completion(
         return response
 
     except Exception as e:
-        # Se siamo qui, i tentativi di tenacity sono esauriti o un'eccezione non-retryable è avvenuta.
+        # If we are here, tenacity attempts are exhausted or a non-retryable exception has occurred.
         logger.error(
             "azure_openai_call_failed",
             error_code=ErrorCode.AI_201.value,
@@ -129,7 +129,7 @@ async def generate_completion(
             error=str(e),
             exc_info=True
         )
-        # Convertiamo sempre in errore custom per rispettare la regola
+        # We always convert to custom error to comply with the rule
         raise AppException(
             ErrorCode.AI_201,
             detail=f"Azure OpenAI timeout/failure after retries: {str(e)}"

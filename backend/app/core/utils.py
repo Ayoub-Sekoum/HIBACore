@@ -65,7 +65,7 @@ def retry(
             return sync_wrapper
     return decorator
 
-# --- Circuit Breaker Pattern ---
+# ---Circuit Breaker Pattern ---
 
 class CircuitState(Enum):
     CLOSED = "closed"

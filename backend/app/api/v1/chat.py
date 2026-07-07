@@ -195,7 +195,7 @@ async def list_skills():
         # Scan subdirectories as individual skills
         for entry in os.scandir(skills_root):
             if entry.is_dir() and not entry.name.startswith('.'):
-                # Basic normalization for display
+                # Basic normalization for displays
                 name = entry.name.replace('-', ' ').title()
                 skills.append(SkillInfo(
                     id=entry.name,
@@ -234,7 +234,7 @@ async def chat_endpoint(
 
         system_prompt = await get_tenant_system_prompt()
 
-        # Determina lo stile automaticamente "sotto la scocca"
+        # Determine style automatically "under the hood"
         writing_style = await determine_writing_style(request.text, memory_context.get("history", []))
         style_instructions = get_style_instructions(writing_style)
         system_prompt += f"\n\nSTILE DI RISPOSTA: {style_instructions}"
@@ -248,7 +248,7 @@ async def chat_endpoint(
         if memory_context.get("history"):
             messages.extend(memory_context["history"])
 
-        # Formatta input multimodale se c'è un'immagine (Task 7.05)
+        # Format multimodal input if there is an image (Task 7.05)
         if request.image_url:
             # Task 7.06: Pre-process with Vision API
             analysis = await vision_service.analyze_image(request.image_url)
@@ -270,11 +270,11 @@ async def chat_endpoint(
         check_prompt_injection(messages)
 
         # Task 3.06: Token count & context window management
-        # Nota: usiamo NORMAL come base per il conteggio token cautelativo
+        # Note: We use NORMAL as the basis for cautionary token counting
         messages = manage_context_window(messages, model_name="gpt-4o")
 
         if not request.isPensieroProfondoAttivo:
-            # Pensiero Profondo OFF: Ritorna risposta via Orchestrator
+            # Deep Thought OFF: Return response via Orchestrator
             orch_result = await orchestrator.route_and_execute(
                 tenant_id=tenant_id,
                 messages=messages,
@@ -305,7 +305,7 @@ async def chat_endpoint(
                 used_skills=[]
             ))
 
-        # Pensiero Profondo ON: DeepAgents Integration
+        # Deep Thinking ON: DeepAgents Integration
         # Combine existing tools and new DeepAgents tools
         tools = [list_files, read_file, write_file, call_external_skill, search_available_skills]
 
@@ -328,7 +328,7 @@ async def chat_endpoint(
         # Add current message
         history_msgs.append(HumanMessage(content=request.text))
 
-        # Execute the agentic loop
+        # Execute the agent loop
         initial_state = AgentState(messages=history_msgs)
         final_state = await agent_app.ainvoke(initial_state)
 
@@ -385,7 +385,7 @@ async def chat_stream_endpoint(
     memory_context = await build_memory_context(session_id, tenant_id, chat_req.text)
     
     system_prompt = await get_tenant_system_prompt()
-    # Determina lo stile automaticamente via History (Task 7.07 + Bonus)
+    # Determine style automatically via History (Task 7.07 + Bonus)
     writing_style = await determine_writing_style(chat_req.text, memory_context.get("history", []))
     style_instructions = get_style_instructions(writing_style)
     system_prompt += f"\n\nSTILE DI RISPOSTA: {style_instructions}"
@@ -421,19 +421,19 @@ async def chat_stream_endpoint(
                 force_level=ThinkingLevel(chat_req.thinking_level) if chat_req.thinking_level in [l.value for l in ThinkingLevel] else None
             )
 
-            # Dobbiamo trackare il tempo dal primo event pensando in deep mode
+            # We need to track time from the first event by thinking in deep mode
             import time
             start_time = time.time()
             last_progress = start_time
             thinking_started = False
             
             async for level, deployment, chunk in stream_response:
-                # Se è in Deep e non abbiamo mandato thinking_start, mandiamolo ora
+                # If it's in Deep and we didn't send thinking_start, let's send it now
                 if level == ThinkingLevel.DEEP and not thinking_started:
                     yield f"event: thinking_start\ndata: {json.dumps({'level': 'deep', 'model': deployment})}\n\n"
                     thinking_started = True
 
-                # Progress ogni 5 secondi
+                # Progress every 5 seconds
                 if thinking_started:
                     now = time.time()
                     if now - last_progress >= 5.0:
@@ -453,7 +453,7 @@ async def chat_stream_endpoint(
                     delta = chunk.choices[0].delta
                     message_info = getattr(chunk.choices[0], "message", None)
                     
-                    # BUGFIX OpenClaw: Prevenire "Reasoning Leak" (Thinking trace) in TUTTI i formati
+                    # BUGFIX OpenClaw: Prevent "Reasoning Leak" (Thinking trace) in ALL formats
                     is_reasoning = False
                     if hasattr(delta, "reasoning_content") and delta.reasoning_content:
                         is_reasoning = True
@@ -463,11 +463,11 @@ async def chat_stream_endpoint(
                         is_reasoning = True
                         
                     if is_reasoning:
-                        # Logghiamo internamente se utile, ma NON yieldiamo all'utente
+                        # We log internally if useful, but DO NOT report to the user
                         continue
                     
                     if delta and delta.content:
-                        # Se avevamo iniziato a pensare, mandiamo thinking_end prima del primo pezzo di risposta 
+                        # If we had started thinking, we send thinking_end before the first response piece
                         if thinking_started:
                             yield f"event: thinking_end\ndata: {json.dumps({'elapsed_seconds': int(time.time() - start_time)})}\n\n"
                             thinking_started = False
@@ -475,11 +475,11 @@ async def chat_stream_endpoint(
                         # Emitting an SSE text chunk
                         yield f"event: message\ndata: {json.dumps({'text': delta.content})}\n\n"
                         
-            # Chiusura sicura per corner case (es. errore prima di iniziare la vera risposta)
+            # Safe closing for corner case (e.g. error before starting the real answer)
             if thinking_started:
                 yield f"event: thinking_end\ndata: {json.dumps({'elapsed_seconds': int(time.time() - start_time)})}\n\n"
                 
-            # Task 3.12: Send final chunk with citations from RAG
+            # Task 3.12: Send final chunk with quotes from RAG
             if citations:
                 yield f"event: citations\ndata: {json.dumps({'citations': citations})}\n\n"
 

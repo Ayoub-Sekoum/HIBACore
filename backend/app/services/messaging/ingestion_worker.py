@@ -33,11 +33,11 @@ async def process_message(message_body: str):
 
         logger.info("worker_processing_start", tenant_id=tenant_id, filename=filename)
 
-        # 1. Pipeline di ingestione (OCR + Chunking)
+        # 1. Ingestion Pipeline (OCR + Chunking)
         # Assuming blob_path is a full URL or we construct it
         chunks = await ingestion_service.process_document(blob_path, filename, tenant_id)
 
-        # 2. Embedding dei chunks (Task 3.11)
+        # 2. Embedding chunks (Task 3.11)
         # In a real setup, we'd embed each chunk using OpenAI
         llm_client = ResilientLLMClient()
         for chunk in chunks:
@@ -48,7 +48,7 @@ async def process_message(message_body: str):
                 logger.error("chunk_embedding_failed", chunk_index=chunk["chunk_index"], error=str(e))
                 chunk["vector"] = []
 
-        # 3. Indicizzazione su AI Search
+        # 3. Indexing on AI Search
         await index_document_chunks(chunks, tenant_id)
 
         logger.info("worker_processing_complete", tenant_id=tenant_id, filename=filename, chunks_indexed=len(chunks))
@@ -82,6 +82,6 @@ async def run_worker():
 
 
 if __name__ == "__main__":
-    # For solo execution
+    # For execution only
     asyncio.run(run_worker())
 

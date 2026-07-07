@@ -21,7 +21,7 @@ from app.core.exceptions import AppException
 
 logger = structlog.get_logger(__name__)
 
-# Cache in-memory con TTL
+# In-memory cache with TTL
 _flag_cache: dict[str, tuple[Any, float]] = {}
 _CACHE_TTL_SECONDS = 60.0
 
@@ -98,7 +98,7 @@ from app.core.credentials import get_global_credential
                     return value
             except Exception:
                 logger.debug("azure_app_config_get_failed", exc_info=True)
-                pass  # Fallback a env vars
+                pass  # Fallback to env vars
 
         # Fallback: env vars
         env_value = os.getenv(flag_name, "false")
@@ -120,13 +120,13 @@ from app.core.credentials import get_global_credential
             if time.time() - cached_at < _CACHE_TTL_SECONDS:
                 return str(value)
 
-        # Fallback a env vars
+        # Fallback to env vars
         value = os.getenv(key, default)
         _flag_cache[cache_key] = (value, time.time())
         return value
 
 
-# ── Singleton ────────────────────────────────────────────────
+# ── Singleton ──────────────────────── ────────────────────────
 _feature_flag_manager = FeatureFlagManager()
 
 

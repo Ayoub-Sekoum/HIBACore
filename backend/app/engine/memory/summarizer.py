@@ -19,20 +19,20 @@ async def compact_context(
 
     logger.info("context_compaction_triggered", count=len(messages))
     
-    # 1. Mantieni intatti gli ultimi 10 messaggi (Regola Masterclass)
+    # 1. Keep the last 10 messages intact (Masterclass Rule)
     recent_messages = messages[-10:]
     older_messages = messages[:-10]
     
-    # 2. Identifica "Ancore" nei messaggi precedenti via AI
-    # (Logica semplificata per efficienza: cerchiamo messaggi con tool_calls o lunghi)
-    # In una versione più avanzata useremmo un 'summarizer_prompt' per filtrarli.
+    # 2. Identify “Anchors” in previous messages via AI
+    # (Simplified logic for efficiency: we look for messages with tool_calls or long)
+    # In a more advanced version we would use a 'summarizer_prompt' to filter them.
     
     anchors = []
     transients = []
     
     orchestrator = ThinkingOrchestrator()
     
-    # Prompt per identificare punti chiave (Solo se older_messages è consistente)
+    # Prompt to identify key points (Only if older_messages is consistent)
     if len(older_messages) > 10:
         summary_text = "\n".join([f"{m.get('role')}: {m.get('content')}" for m in older_messages])
         prompt = f"""
@@ -42,7 +42,7 @@ async def compact_context(
         {summary_text}
         """
         
-        # Usiamo gpt-4o-mini (fast) per la compattazione
+        # We use gpt-4o-mini (fast) for compaction
         try:
             summary_content = ""
             messages_for_summary = [{"role": "user", "content": prompt}]
@@ -64,7 +64,7 @@ async def compact_context(
                 })
         except Exception as e:
             logger.warning("compaction_ai_failed", error=str(e))
-            # Fallback: Solo gli ultimi 20 se fallisce l'AI
+            # Fallback: Only the last 20 if the AI ​​fails
             return messages[-20:]
 
     return anchors + recent_messages

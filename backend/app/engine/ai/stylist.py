@@ -11,11 +11,11 @@ async def determine_writing_style(text: str, history: list[dict[str, str]] = [])
     In futuro integrerà Azure AI Text Analytics per analisi del sentiment e complessità.
     """
 
-    # Esempio di logica "automatic" sotto la scocca:
-    # Se il testo è corto -> Conciso
-    # Se contiene termini tecnici ("codice", "python", "architettura") -> Accademico/Tecnico
-    # Se è un saluto o colloquiale -> Creativo/Amichevole
-    # Default -> Professionale
+    # Example of "automatic" logic under the hood:
+    # If the text is short -> Concise
+    # If it contains technical terms ("code", "python", "architecture") -> Academic/Technical
+    # If it's a greeting or conversational -> Creative/Friendly
+    # Default -> Professional
 
     prompt = f"""
     Analizza il seguente messaggio utente e determina lo stile di risposta migliore tra:
@@ -31,7 +31,7 @@ async def determine_writing_style(text: str, history: list[dict[str, str]] = [])
 
     try:
         llm_client = ResilientLLMClient()
-        # Usiamo il modello mini per questa analisi veloce "sotto la scocca"
+        # Let's use the mini model for this quick "under the hood" analysis
         response = await llm_client.complete(
             messages=[{"role": "system", "content": "Sei un analista linguistico esperto."}, {"role": "user", "content": prompt}],
             model="gpt-4o-mini"

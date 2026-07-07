@@ -3,7 +3,7 @@ import { MessageSquare, Shield, Zap, FileSearch } from 'lucide-react';
 
 /**
  * WelcomeScreen Component
- * Stile Apple-inspired: pulito, leggero, enfasi sulla tipografia e le icone.
+ * Apple-inspired style: clean, light, emphasis on typography and icons.
  */
 const WelcomeScreen: React.FC = () => {
   const cards = [

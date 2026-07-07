@@ -61,7 +61,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
             </div>
 
             <div className="p-8 space-y-8">
-              {/* System Prompt Section */}
+              {/* System Prompt Section*/}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-[var(--apple-text)]">
                   <Terminal size={18} className="text-red-500" />
@@ -78,7 +78,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 </p>
               </div>
 
-              {/* Security Status */}
+              {/* Security Status*/}
               <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/20 flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white">
                   <Shield size={20} />

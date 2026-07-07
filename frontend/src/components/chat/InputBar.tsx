@@ -7,8 +7,8 @@ interface InputBarProps {
 }
 
 /**
- * InputBar — Una versione alternativa e più compatta di ChatInput.
- * Design ultra-minimal stile Apple, ideale per integrazioni rapide.
+ * InputBar — An alternative, more compact version of ChatInput.
+ * Ultra-minimal Apple-style design, ideal for quick integrations.
  */
 const InputBar: React.FC<InputBarProps> = ({ onSend, disabled }) => {
   const [text, setText] = useState('');

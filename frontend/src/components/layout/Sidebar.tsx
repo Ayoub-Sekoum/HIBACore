@@ -97,7 +97,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="hidden md:flex flex-col items-center py-6 border-r h-full shrink-0 px-4 bg-white border-[var(--border-light)]" style={{ width: '17rem' }}>
-      {/* Logo & New Thread */}
+      {/* Logo & New Thread*/}
       <div className="w-full flex flex-col gap-6 mb-8 px-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -124,7 +124,7 @@ const Sidebar: React.FC = () => {
         </button>
       </div>
 
-      {/* Main Navigation */}
+      {/* Main Navigation*/}
       <div className="flex flex-col gap-1 w-full flex-1 overflow-y-auto scrollbar-none">
         <SidebarItem 
           icon={<Home size={20} />} 
@@ -192,7 +192,7 @@ const Sidebar: React.FC = () => {
           onClick={() => navigate('/support')}
         />
 
-        {/* Administration Section */}
+        {/* Administration Section*/}
         <div className="mt-8 mb-2 px-4">
           <p className="text-[10px] font-bold text-[var(--apple-text-muted)] uppercase tracking-widest opacity-50">Administration</p>
         </div>
@@ -216,7 +216,7 @@ const Sidebar: React.FC = () => {
         />
       </div>
 
-      {/* Bottom Actions */}
+      {/* Bottom Actions*/}
       <div className="w-full pt-4 mt-4 border-t border-[var(--border-light)] flex flex-col gap-2">
         <SidebarItem 
           icon={<Settings size={20} />} 
@@ -224,7 +224,7 @@ const Sidebar: React.FC = () => {
           onClick={() => setIsSettingsOpen(true)}
         />
 
-        {/* Legal & Support Links */}
+        {/* Legal & Support Links*/}
         <div className="flex flex-col gap-1 mt-1 border-b border-[var(--border-light)] pb-3 mb-2">
           <button 
             onClick={() => navigate('/legal')}
@@ -255,7 +255,7 @@ const Sidebar: React.FC = () => {
           onClick={handleLogout}
         />
 
-        {/* Profile Card */}
+        {/* Profile Card*/}
         <div className="w-full flex items-center gap-3 p-2.5 rounded-[18px] border border-gray-100 transition-colors hover:bg-gray-50 cursor-pointer mt-2 bg-white">
           <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-red-500 to-orange-400 overflow-hidden shadow-sm flex items-center justify-center text-white font-bold text-xs uppercase">
             {user?.name?.substring(0, 2) || 'US'}

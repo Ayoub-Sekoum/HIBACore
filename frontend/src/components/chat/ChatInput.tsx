@@ -115,7 +115,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
               <span className="hidden sm:inline">Attach</span>
             </button>
 
-            {/* Model Selector Dropdown Replacement for Writing Styles */}
+            {/* Model Selector Dropdown Replacement for Writing Styles*/}
             <div className="relative">
               <button 
                 onClick={() => setShowModelMenu(!showModelMenu)}
@@ -164,7 +164,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Deep Thinking Toggle */}
+            {/* Deep Thinking Toggle*/}
             <div 
               onClick={() => setDeepThinking(!isDeepThinking)}
               className="flex items-center gap-2 cursor-pointer group/toggle active:scale-95 transition-transform"
@@ -179,7 +179,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
               <span className={`text-[12px] font-bold transition-colors ${isDeepThinking ? 'text-[var(--brand-red)]' : 'text-gray-400'}`}>Thinking</span>
             </div>
 
-            {/* Citation Toggle */}
+            {/* Citation Toggle*/}
             <div 
               onClick={() => setCitationsEnabled(!isCitationsEnabled)}
               className="hidden sm:flex items-center gap-2 cursor-pointer group/toggle active:scale-95 transition-transform"

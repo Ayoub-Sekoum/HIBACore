@@ -72,7 +72,7 @@ const TenantAdminConsole: React.FC = () => {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                {/* Left Column: Tools Configuration */}
+                {/* Left Column: Tools Configuration*/}
                 <div className="md:col-span-2 space-y-8">
                     <section className="glass-effect rounded-[2.5rem] p-8 space-y-6">
                         <div className="flex items-center justify-between">
@@ -128,7 +128,7 @@ const TenantAdminConsole: React.FC = () => {
                     </section>
                 </div>
 
-                {/* Right Column: General Settings & Audit */}
+                {/* Right Column: General Settings & Audit*/}
                 <div className="space-y-8">
                      <section className="glass-effect rounded-[2rem] p-6 space-y-6">
                         <h2 className="text-xl font-bold flex items-center gap-3">

@@ -9,7 +9,7 @@ logger = structlog.get_logger(__name__)
 # Format: {tenant_id: prompt_text}
 _PROMPT_DB: dict[str, str] = {}
 
-# Default prompt se il tenant non ne ha uno personalizzato
+# Default prompt if the tenant does not have a custom one
 DEFAULT_SYSTEM_PROMPT = "Sei un assistente AI aziendale utile ed educato."
 
 async def get_tenant_system_prompt(tenant_id: str | None = None) -> str:

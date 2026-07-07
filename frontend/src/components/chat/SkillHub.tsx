@@ -51,7 +51,7 @@ const SkillHub: React.FC<SkillHubProps> = ({ isOpen, onClose }) => {
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             className="relative w-full max-w-2xl bg-white dark:bg-[#111] border border-[var(--border-light)] dark:border-[#333] rounded-[28px] shadow-2xl overflow-hidden flex flex-col h-[80vh]"
           >
-            {/* Header */}
+            {/* Header*/}
             <div className="p-6 border-b dark:border-[#333] flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-500/20">
@@ -70,7 +70,7 @@ const SkillHub: React.FC<SkillHubProps> = ({ isOpen, onClose }) => {
               </button>
             </div>
 
-            {/* Search */}
+            {/* Search*/}
             <div className="px-6 py-4 border-b dark:border-[#333] shrink-0 bg-gray-50/50 dark:bg-[#161618]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
@@ -84,7 +84,7 @@ const SkillHub: React.FC<SkillHubProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Skills List */}
+            {/* Skills List*/}
             <div className="flex-1 overflow-y-auto p-4 scrollbar-thin">
               <div className="grid grid-cols-1 gap-2">
                 {filteredSkills.map((skill) => {
@@ -127,7 +127,7 @@ const SkillHub: React.FC<SkillHubProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Footer */}
+            {/* Footer*/}
             <div className="p-4 px-6 border-t dark:border-[#333] bg-gray-50/50 dark:bg-[#161618] flex items-center justify-between">
               <span className="text-[12px] text-[var(--apple-text-muted)] font-medium">
                 {enabledSkillIds.length} Funzioni Attive

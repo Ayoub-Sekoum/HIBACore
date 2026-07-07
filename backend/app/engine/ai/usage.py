@@ -10,7 +10,7 @@ logger = structlog.get_logger(__name__)
 # Mock database until Cosmos DB is fully wired up in Phase 4
 _USAGE_DB: dict[str, list] = {}
 
-# Approximate pricing per 1K tokens for Azure OpenAI
+# Approximate pricing for 1K tokens for Azure OpenAI
 PRICING = {
     "gpt-4o": {"prompt": 0.005, "completion": 0.015},
     "gpt-4o-mini": {"prompt": 0.00015, "completion": 0.0006},

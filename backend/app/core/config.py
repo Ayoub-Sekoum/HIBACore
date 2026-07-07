@@ -47,7 +47,7 @@ class Settings(BaseSettings):
 
     AZURE_STORAGE_CONNECTION_STRING: str | None = None
     
-    # PostgreSQL / pgvector (Semantic Memory)
+    # PostgreSQL/pgvector (Semantic Memory)
     DB_HOST: str | None = None
     DB_NAME: str = "postgres"
     DB_USER: str | None = None

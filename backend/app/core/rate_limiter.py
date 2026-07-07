@@ -21,7 +21,7 @@ from app.core.exceptions import AppException
 
 logger = structlog.get_logger(__name__)
 
-# Default: 1000 richieste per minuto per tenant
+# Default: 1000 requests per minute per tenant
 _DEFAULT_RATE_LIMIT = int(os.getenv("RATE_LIMIT_PER_TENANT", "1000"))
 _WINDOW_SIZE_SECONDS = 60
 
@@ -83,20 +83,20 @@ class RateLimiter:
 
         pipe = self._redis.pipeline()
 
-        # Rimuovi richieste fuori dalla finestra
+        # Remove requests outside the window
         pipe.zremrangebyscore(key, 0, now - _WINDOW_SIZE_SECONDS)
-        # Conta richieste nella finestra
+        # Count requests in the window
         pipe.zcard(key)
-        # Aggiungi richiesta corrente
+        # Add current request
         pipe.zadd(key, {str(now): now})
-        # TTL sulla key
+        # TTL on the key
         pipe.expire(key, _WINDOW_SIZE_SECONDS + 10)
 
         results = await pipe.execute()
         request_count = results[1]
 
         if request_count >= limit:
-            # Calcola Retry-After
+            # Calculate Retry-After
             oldest = await self._redis.zrange(key, 0, 0, withscores=True)
             if oldest:
                 retry_after = int(_WINDOW_SIZE_SECONDS - (now - oldest[0][1])) + 1
@@ -113,7 +113,7 @@ class RateLimiter:
             await self._redis.close()
 
 
-# ── Singleton ────────────────────────────────────────────────
+# ── Singleton ──────────────────────── ────────────────────────
 _rate_limiter = RateLimiter()
 
 
@@ -133,13 +133,13 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         request: Request,
         call_next: RequestResponseEndpoint,
     ) -> Response:
-        # Skip per /health e /docs
+        # Skip for /health and /docs
         if request.url.path in ("/health", "/docs", "/openapi.json", "/redoc"):
             return await call_next(request)
 
         tenant_id = get_tenant_id()
         if not tenant_id:
-            # Nessun tenant nel context = pre-auth, skip rate limit
+            # No tenant in context = pre-auth, skip rate limit
             return await call_next(request)
 
         limiter = get_rate_limiter()
@@ -155,7 +155,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         response = await call_next(request)
 
-        # Aggiungi headers rate limit
+        # Add headers rate limit
         response.headers["X-RateLimit-Limit"] = str(_DEFAULT_RATE_LIMIT)
         response.headers["X-RateLimit-Remaining"] = str(remaining)
         if retry_after > 0:
