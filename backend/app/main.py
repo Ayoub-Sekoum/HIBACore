@@ -21,7 +21,7 @@ logger = structlog.get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     configure_logging()
-    logger.info("app_starting", version="1.0.0")
+    logger.info("app_starting", version="0.3.5")
     print("DEBUG: Lifespan starting...")
     rate_limiter = get_rate_limiter()
     await rate_limiter.initialize()
@@ -42,7 +42,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="AI Multi-Tenant Chatbot Enterprise",
         description="Chatbot AI enterprise multi-tenant SaaS su Azure.",
-        version="1.0.0",
+        version="0.3.5",
         docs_url="/docs",
         redoc_url="/redoc",
         lifespan=lifespan,

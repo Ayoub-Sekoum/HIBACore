@@ -1,6 +1,6 @@
 {
   "name": "ai-multi-tenant-chatbot",
-  "version": "1.0.0",
+  "version": "0.3.5",
   "engines": {
     "node": ">=20.0.0"
   },

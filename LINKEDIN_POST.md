@@ -1,4 +1,4 @@
-# LinkedIn Post - HIBACore Release (v0.1.0-alpha)
+# LinkedIn Post - HIBACore Release (v0.3.5)
 
 *Note: This post is strictly based on the technical facts and architecture documented in the project Wiki.*
 
@@ -6,7 +6,7 @@
 
 **[ENG Version]**
 
-🚀 **I'm thrilled to announce the open-source release of HIBACore (v0.1.0-alpha)!** 
+🚀 **I'm thrilled to announce the open-source release of HIBACore (v0.3.5)!** 
 
 Based on our internal HOBA AI Enterprise project, HIBACore is a full-stack, enterprise-grade AI Chatbot architecture built from the ground up to support Multi-Tenancy, strict data isolation, and Azure-native integrations. 
 
@@ -37,7 +37,7 @@ We are currently in Alpha. Feedback, PRs, and architectural discussions are welc
 
 **[ITA Version]**
 
-🚀 **Sono felice di annunciare il rilascio open-source di HIBACore (v0.1.0-alpha)!**
+🚀 **Sono felice di annunciare il rilascio open-source di HIBACore (v0.3.5)!**
 
 Nato dal progetto interno HOBA AI Enterprise, HIBACore è un'architettura AI full-stack pensata per il mondo enterprise, progettata per supportare Multi-Tenancy, isolamento dei dati e integrazione nativa con Azure.
 

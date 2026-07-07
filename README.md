@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Alpha" src="https://img.shields.io/badge/status-alpha-orange?style=flat-square"/>
+  <img alt="Release" src="https://img.shields.io/badge/release-v0.3.5-blue?style=flat-square"/>
   <img alt="Python" src="https://img.shields.io/badge/Python-3.12-blue?style=flat-square&logo=python"/>
   <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi"/>
   <img alt="React" src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react"/>
@@ -20,7 +20,7 @@
 
 ---
 
-> **Alpha software.** HIBACore is under active development. APIs may change, features are incomplete, and it is not recommended for production use without thorough testing. Contributions and feedback are welcome.
+> **Release v0.3.5.** HIBACore is under active development. APIs may change, features are incomplete, and it is not recommended for production use without thorough testing. Contributions and feedback are welcome.
 
 ---
 
