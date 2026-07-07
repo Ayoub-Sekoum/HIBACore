@@ -20,14 +20,13 @@
 
 ---
 
-## 🚀 GitHub Actions Deployment
+## 🚀 One-Click Deployment
 
-Aggiorna il codice sui tuoi server Azure con un click usando la nostra pipeline automatizzata.
+Crea le risorse (App Services, Piano Hosting, ecc.) e collega in automatico questa repository per il deploy diretto premendo il tasto qui sotto:
 
-[![Run GitHub Actions](https://img.shields.io/badge/Run_Deployment-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/Ayoub-Sekoum/HIBACore/actions/workflows/deploy-azure.yml)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAyoub-Sekoum%2FHIBACore%2Fmain%2Fazuredeploy.json)
 
-> **Importante sull'Infrastruttura:** HIBACore è un'applicazione Enterprise con un'architettura di rete sicura (VNet Hub-Spoke, Private Endpoints, Azure OpenAI, PostgreSQL pgvector). Questo livello di sicurezza non può essere creato con un semplice tasto "Deploy to Azure" (ARM Template). 
-> Le risorse **devono** essere prima create usando gli script Terraform presenti in `infrastructure/terraform`. Una volta che i server sono attivi, puoi usare il bottone qui sopra per rilasciare il codice.
+> **Nota:** Questo bottone crea un ambiente Quickstart di base (Backend e Frontend). Per l'infrastruttura completa Enterprise con database vettoriali e reti private, consulta la cartella `infrastructure/terraform`.
 
 ---
 
