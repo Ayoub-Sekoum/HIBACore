@@ -20,7 +20,7 @@ def _get_model():
     global _model
     if _model is None:
         try:
-            # Modello specifico richiesto dal PIANO_LAVORO_GEMINI.md
+            # Modello cross-encoder specifico
             _model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
         except Exception as e:
             logger.error("reranker_model_load_failed", error=str(e))
