@@ -3,8 +3,9 @@
 # ────────────────────────────────────────────────────────────────
 # Press "Run workflow" on GitHub Actions to deploy.
 #
-# Required GitHub Secret:
-#   AZURE_CREDENTIALS – JSON from `az ad sp create-for-rbac --sdk-auth`
+# Required GitHub Secrets (already configured):
+#   AZURE_BACKEND_PUBLISH_PROFILE  – Backend App Service publish profile
+#   AZURE_FRONTEND_PUBLISH_PROFILE – Frontend App Service publish profile
 # ────────────────────────────────────────────────────────────────
 
 name: "\U0001F680 Deploy to Azure"
@@ -25,7 +26,6 @@ on:
 env:
   PYTHON_VERSION: "3.12"
   NODE_VERSION: "20"
-  RESOURCE_GROUP: "rg-bot"
   BACKEND_APP_NAME: "app-be-meteora-dev"
   FRONTEND_APP_NAME: "app-meteora-dev-74eit"
 
@@ -34,18 +34,12 @@ jobs:
   # BACKEND: FastAPI → Azure App Service (Linux, Oryx)
   # ────────────────────────────────────────────────────
   deploy-backend:
-    name: "\U0001F40D Backend → Azure"
+    name: "\U0001F40D Backend"
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.deploy_target == 'all' || github.event.inputs.deploy_target == 'backend' }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: "\U0001F510 Azure Login"
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: actions/checkout@v4
 
       - name: "\U0001F4E6 Package backend"
         run: |
@@ -56,70 +50,41 @@ jobs:
             -x ".env" \
             -x ".env.*" \
             -x "skill-engine/node_modules/*" \
-            -x "*.bak" \
-            -x "*.bak2" \
+            -x "*.bak*" \
             -x "*.zip"
-          echo "✅ Backend zip created ($(du -h ../backend-deploy.zip | cut -f1))"
+          echo "✅ $(du -h ../backend-deploy.zip | cut -f1)"
 
-      - name: "\U0001F680 Deploy to App Service"
-        run: |
-          az webapp deploy \
-            --name ${{ env.BACKEND_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --src-path backend-deploy.zip \
-            --type zip \
-            --restart true \
-            --timeout 600
-
-      - name: "\U0001F3E5 Configure App Service"
-        run: |
-          # Ensure Oryx builds dependencies on deploy
-          az webapp config appsettings set \
-            --name ${{ env.BACKEND_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --settings \
-              SCM_DO_BUILD_DURING_DEPLOYMENT=true \
-              WEBSITE_RUN_FROM_PACKAGE=0 \
-            --output none
-
-          # Set startup command
-          az webapp config set \
-            --name ${{ env.BACKEND_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --startup-file "startup.sh" \
-            --output none
+      - name: "\U0001F680 Deploy"
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.BACKEND_APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_BACKEND_PUBLISH_PROFILE }}
+          package: backend-deploy.zip
 
       - name: "❤️ Health Check"
         run: |
-          echo "Waiting 90s for cold start..."
           sleep 90
-          for i in 1 2 3; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              --max-time 30 \
+          for i in 1 2 3 4; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
               https://${{ env.BACKEND_APP_NAME }}.azurewebsites.net/health || echo "000")
-            echo "Attempt $i: HTTP $STATUS"
-            if [ "$STATUS" = "200" ]; then
-              echo "✅ Backend is healthy!"
-              exit 0
-            fi
+            echo "Attempt $i → HTTP $STATUS"
+            [ "$STATUS" = "200" ] && echo "✅ Backend healthy!" && exit 0
             sleep 30
           done
-          echo "⚠️ Backend not responding yet — may need more startup time on B1 plan"
+          echo "⚠️ Backend still starting (B1 cold start can take 2-5 min)"
 
   # ────────────────────────────────────────────────────
   # FRONTEND: React → Azure App Service (Node server)
   # ────────────────────────────────────────────────────
   deploy-frontend:
-    name: "⚛️ Frontend → Azure"
+    name: "⚛️ Frontend"
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.deploy_target == 'all' || github.event.inputs.deploy_target == 'frontend' }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: "\U0001F7E2 Setup Node.js"
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -131,61 +96,28 @@ jobs:
         env:
           VITE_API_URL: "https://${{ env.BACKEND_APP_NAME }}.azurewebsites.net/api/v1"
 
-      - name: "\U0001F5DC️ Package frontend"
+      - name: "\U0001F5DC️ Package"
         working-directory: frontend
         run: |
-          # server.cjs serves dist/ — copy it inside dist for flat deployment
           cp server.cjs dist/server.cjs
           cd dist
           zip -r ../../frontend-deploy.zip .
-          echo "✅ Frontend zip created ($(du -h ../../frontend-deploy.zip | cut -f1))"
+          echo "✅ $(du -h ../../frontend-deploy.zip | cut -f1)"
 
-      - name: "\U0001F510 Azure Login"
-        uses: azure/login@v2
+      - name: "\U0001F680 Deploy"
+        uses: azure/webapps-deploy@v3
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: "\U0001F680 Deploy to App Service"
-        run: |
-          az webapp deploy \
-            --name ${{ env.FRONTEND_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --src-path frontend-deploy.zip \
-            --type zip \
-            --restart true \
-            --timeout 300
-
-      - name: "\U0001F3E5 Configure App Service"
-        run: |
-          az webapp config appsettings set \
-            --name ${{ env.FRONTEND_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --settings \
-              WEBSITE_RUN_FROM_PACKAGE=0 \
-              WEBSITES_PORT=8080 \
-            --output none
-
-          az webapp config set \
-            --name ${{ env.FRONTEND_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --startup-file "node server.cjs" \
-            --output none
+          app-name: ${{ env.FRONTEND_APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
+          package: frontend-deploy.zip
 
       - name: "\U0001F310 Verify"
         run: |
           sleep 30
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 15 \
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 \
             https://${{ env.FRONTEND_APP_NAME }}.azurewebsites.net/ || echo "000")
-          echo "Frontend HTTP: $STATUS"
-          if [ "$STATUS" = "200" ]; then
-            echo "✅ Frontend is live!"
-          else
-            echo "⚠️ Frontend returned $STATUS"
-          fi
+          [ "$STATUS" = "200" ] && echo "✅ Frontend live!" || echo "⚠️ HTTP $STATUS"
 
-  # ────────────────────────────────────────────────────
-  # SUMMARY
   # ────────────────────────────────────────────────────
   summary:
     name: "\U0001F4CB Summary"
@@ -193,15 +125,14 @@ jobs:
     needs: [deploy-backend, deploy-frontend]
     if: always()
     steps:
-      - name: Results
-        run: |
+      - run: |
           echo "═══════════════════════════════════════"
-          echo "  HIBACore Deploy — Results"
+          echo "  HIBACore Deploy Results"
           echo "═══════════════════════════════════════"
           echo "  Backend:  ${{ needs.deploy-backend.result }}"
           echo "  Frontend: ${{ needs.deploy-frontend.result }}"
           echo ""
-          echo "  🐍 https://${{ env.BACKEND_APP_NAME }}.azurewebsites.net"
-          echo "  ⚛️  https://${{ env.FRONTEND_APP_NAME }}.azurewebsites.net"
-          echo "  📖 https://${{ env.BACKEND_APP_NAME }}.azurewebsites.net/docs"
+          echo "  🐍 https://app-be-meteora-dev.azurewebsites.net"
+          echo "  ⚛️  https://app-meteora-dev-74eit.azurewebsites.net"
+          echo "  📖 https://app-be-meteora-dev.azurewebsites.net/docs"
           echo "═══════════════════════════════════════"
